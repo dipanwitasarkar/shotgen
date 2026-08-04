@@ -33,14 +33,14 @@ const PROVIDERS: Provider[] = [
   {
     id: 'pollinations',
     name: 'Pollinations.ai ⭐ FREE',
-    description: 'Completely free, no API key needed!',
+    description: 'Free, no API key (1 req/15s limit)',
     apiKeyLabel: 'No API Key Needed',
     keyUrl: '',
     models: [
-      { id: 'flux', name: 'FLUX', description: 'FREE - Versatile, no API key needed' },
+      { id: 'flux', name: 'FLUX', description: 'FREE - 1 request per 15 seconds' },
       { id: 'flux-realism', name: 'FLUX Realism', description: 'FREE - Photorealistic' },
       { id: 'flux-anime', name: 'FLUX Anime', description: 'FREE - Illustration style' },
-      { id: 'turbo', name: 'Turbo', description: 'FREE - Fastest generation' },
+      { id: 'turbo', name: 'Turbo', description: 'FREE - Fastest' },
     ],
   },
   {

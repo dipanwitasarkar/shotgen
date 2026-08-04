@@ -59,13 +59,15 @@ class PollinationsProvider(AIProvider):
                     seed = (int(time.time()) + i) % 2147483647
                 
                 # Build URL with parameters
+                # Note: Free tier has rate limits (1 req/15s for anonymous)
                 params = {
                     "width": request.output_width,
                     "height": request.output_height,
                     "seed": seed,
-                    "model": self.MODELS.get("flux", "flux"),
+                    "model": "flux",  # Use flux model
                     "nologo": "true",  # Remove watermark
-                    "enhance": "true",  # Better quality
+                    "enhance": "false",  # Disable enhance to avoid pollen costs
+                    "safe": "false",  # Disable safety filter
                 }
                 
                 # URL encode the prompt
@@ -95,14 +97,22 @@ class PollinationsProvider(AIProvider):
         except httpx.HTTPStatusError as e:
             # Extract user-friendly error message
             error_msg = "Service temporarily unavailable"
-            try:
-                error_data = e.response.json()
-                if "message" in error_data:
-                    error_msg = error_data["message"]
-                elif "error" in error_data and isinstance(error_data["error"], dict):
-                    error_msg = error_data["error"].get("message", error_msg)
-            except:
-                pass
+            
+            # Handle specific error codes
+            if e.response.status_code == 402:
+                error_msg = "Free tier limit reached. Pollinations requires an API key for enhanced features. Try again in 15 seconds or use a different provider."
+            elif e.response.status_code == 429:
+                error_msg = "Rate limit exceeded. Free tier: 1 request per 15 seconds. Please wait and try again."
+            else:
+                try:
+                    error_data = e.response.json()
+                    if "message" in error_data:
+                        error_msg = error_data["message"]
+                    elif "error" in error_data and isinstance(error_data["error"], dict):
+                        error_msg = error_data["error"].get("message", error_msg)
+                except:
+                    pass
+            
             raise Exception(f"Pollinations.ai: {error_msg}")
         except Exception as e:
             # Clean up error message
