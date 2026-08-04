@@ -15,11 +15,12 @@ export interface AppSettings {
   apiKey: string
 }
 
-const DEFAULT_PROVIDERS = [
+const DEFAULT_PROVIDERS: CustomProvider[] = [
   {
     id: 'replicate',
     name: 'Replicate',
     description: 'Easy to use, pay-per-use pricing',
+    apiKeyLabel: 'API Token',
     keyUrl: 'https://replicate.com/account/api-tokens',
     models: [
       { id: 'sdxl', name: 'Stable Diffusion XL', description: 'Best quality, slower' },
@@ -32,6 +33,7 @@ const DEFAULT_PROVIDERS = [
     id: 'stability',
     name: 'Stability AI',
     description: 'Direct from Stability, competitive pricing',
+    apiKeyLabel: 'API Key',
     keyUrl: 'https://platform.stability.ai/account/keys',
     models: [
       { id: 'sd3', name: 'Stable Diffusion 3', description: 'Latest model' },
@@ -43,6 +45,7 @@ const DEFAULT_PROVIDERS = [
     id: 'fal',
     name: 'FAL.ai',
     description: 'Fast inference, good pricing',
+    apiKeyLabel: 'API Key',
     keyUrl: 'https://fal.ai/dashboard/keys',
     models: [
       { id: 'flux-pro', name: 'Flux Pro', description: 'Best quality' },

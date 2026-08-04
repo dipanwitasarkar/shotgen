@@ -14,7 +14,8 @@ export interface CustomProvider {
   id: string
   name: string
   description: string
-  apiKeyLabel: string
+  apiKeyLabel?: string
+  keyUrl?: string
   baseUrl?: string
   models: CustomModel[]
 }
