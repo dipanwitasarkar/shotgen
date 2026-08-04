@@ -22,26 +22,46 @@ class ProviderFactory:
     }
     
     @classmethod
-    def get_provider(cls, provider_name: str | None = None) -> AIProvider:
+    def get_provider(cls, provider_name: str | None = None, api_key: str | None = None) -> AIProvider:
         """
         Get an AI provider instance.
         
         Args:
             provider_name: Name of provider, or None to use default from settings
+            api_key: API key for the provider, or None to use from settings
             
         Returns:
             AIProvider instance
             
         Raises:
-            ValueError: If provider is not supported
+            ValueError: If provider is not supported or API key missing
         """
-        name = provider_name or settings.ai_provider
+        # Import here to avoid circular dependency
+        from app.api.routes import get_runtime_settings
+        
+        runtime = get_runtime_settings()
+        
+        # Determine provider name
+        name = provider_name or runtime.get("provider") or settings.ai_provider
         
         if name not in cls._providers:
             available = ", ".join(cls._providers.keys())
             raise ValueError(f"Unknown provider: {name}. Available: {available}")
         
-        return cls._providers[name]()
+        # Get API key from runtime settings or parameter
+        key = api_key or runtime.get("api_key")
+        
+        # Fallback to environment variables
+        if not key:
+            if name == "replicate":
+                key = settings.replicate_api_token
+            elif name == "stability":
+                key = settings.stability_api_key
+        
+        if not key:
+            raise ValueError(f"API key required for {name}. Configure in Settings panel.")
+        
+        return cls._providers[name](key)
     
     @classmethod
     def list_providers(cls) -> list[str]:
