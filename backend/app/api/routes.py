@@ -299,5 +299,8 @@ async def get_available_models():
                 {"id": "flux-dev", "name": "Flux Dev", "description": "Development"},
                 {"id": "sdxl", "name": "SDXL", "description": "Stable Diffusion XL"},
             ],
+            "nvidia": [
+                {"id": "flux-schnell", "name": "Flux Schnell", "description": "NVIDIA NIM - Very fast, 4 steps"},
+            ],
         }
     )

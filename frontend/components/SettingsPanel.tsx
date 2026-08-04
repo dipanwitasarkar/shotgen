@@ -17,6 +17,16 @@ export interface AppSettings {
 
 const DEFAULT_PROVIDERS: CustomProvider[] = [
   {
+    id: 'nvidia',
+    name: 'NVIDIA NIM',
+    description: 'NVIDIA AI endpoints, fast inference',
+    apiKeyLabel: 'API Key',
+    keyUrl: 'https://build.nvidia.com/explore/discover',
+    models: [
+      { id: 'flux-schnell', name: 'Flux Schnell', description: 'NVIDIA NIM - Very fast, 4 steps' },
+    ],
+  },
+  {
     id: 'replicate',
     name: 'Replicate',
     description: 'Easy to use, pay-per-use pricing',

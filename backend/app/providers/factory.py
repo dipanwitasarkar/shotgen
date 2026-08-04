@@ -5,6 +5,7 @@ from app.core.config import settings
 from app.providers.base import AIProvider
 from app.providers.replicate_provider import ReplicateProvider
 from app.providers.stability_provider import StabilityProvider
+from app.providers.nvidia_provider import NVIDIAProvider
 
 
 class ProviderFactory:
@@ -13,6 +14,7 @@ class ProviderFactory:
     _providers: dict[str, type[AIProvider]] = {
         "replicate": ReplicateProvider,
         "stability": StabilityProvider,
+        "nvidia": NVIDIAProvider,
         # Add more providers here:
         # "comfyui": ComfyUIProvider,
         # "fal": FALProvider,
