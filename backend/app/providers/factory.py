@@ -9,12 +9,14 @@ from app.providers.nvidia_provider import NVIDIAProvider
 from app.providers.together_provider import TogetherProvider
 from app.providers.huggingface_provider import HuggingFaceProvider
 from app.providers.google_provider import GoogleProvider
+from app.providers.pollinations_provider import PollinationsProvider
 
 
 class ProviderFactory:
     """Factory for creating AI provider instances."""
     
     _providers: dict[str, type[AIProvider]] = {
+        "pollinations": PollinationsProvider,
         "nvidia": NVIDIAProvider,
         "google": GoogleProvider,
         "together": TogetherProvider,
@@ -60,10 +62,13 @@ class ProviderFactory:
             elif name == "stability":
                 key = settings.stability_api_key
         
-        if not key:
+        # Some providers don't need API keys (e.g., Pollinations)
+        providers_without_keys = ["pollinations"]
+        
+        if not key and name not in providers_without_keys:
             raise ValueError(f"API key required for {name}. Configure in Settings panel.")
         
-        return cls._providers[name](key)
+        return cls._providers[name](key or "")
     
     @classmethod
     def list_providers(cls) -> list[str]:

@@ -31,6 +31,19 @@ interface Model {
 
 const PROVIDERS: Provider[] = [
   {
+    id: 'pollinations',
+    name: 'Pollinations.ai ⭐ FREE',
+    description: 'Completely free, no API key needed!',
+    apiKeyLabel: 'No API Key Needed',
+    keyUrl: '',
+    models: [
+      { id: 'flux', name: 'FLUX', description: 'FREE - Versatile, no API key needed' },
+      { id: 'flux-realism', name: 'FLUX Realism', description: 'FREE - Photorealistic' },
+      { id: 'flux-anime', name: 'FLUX Anime', description: 'FREE - Illustration style' },
+      { id: 'turbo', name: 'Turbo', description: 'FREE - Fastest generation' },
+    ],
+  },
+  {
     id: 'nvidia',
     name: 'NVIDIA NIM',
     description: 'NVIDIA AI endpoints, fast inference',
@@ -144,12 +157,13 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
   }
 
   const handleSave = async () => {
-    if (!apiKey.trim()) {
+    // Pollinations doesn't need API key
+    if (provider !== 'pollinations' && !apiKey.trim()) {
       setError('API key is required')
       return
     }
 
-    const settings: AppSettings = { provider, model, apiKey }
+    const settings: AppSettings = { provider, model, apiKey: apiKey || 'no-key-needed' }
     
     // Save to localStorage
     localStorage.setItem('shotgen-settings', JSON.stringify(settings))
@@ -265,14 +279,15 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
             </div>
           </div>
 
-          {/* API Key Input */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
-                <Key className="w-4 h-4" />
-                {currentProvider?.apiKeyLabel || 'API Key'}
-              </label>
-              {currentProvider?.keyUrl && (
+          {/* API Key Input - Hide for Pollinations */}
+          {provider !== 'pollinations' && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <Key className="w-4 h-4" />
+                  {currentProvider?.apiKeyLabel || 'API Key'}
+                </label>
+                {currentProvider?.keyUrl && (
                 <a
                   href={currentProvider.keyUrl}
                   target="_blank"
@@ -300,23 +315,24 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
                 {showKey ? 'Hide' : 'Show'}
               </button>
             </div>
-            {error && (
-              <p className="text-sm text-red-600 flex items-center gap-1">
-                <AlertCircle className="w-4 h-4" />
-                {error}
-              </p>
-            )}
-          </div>
+              {error && (
+                <p className="text-sm text-red-600 flex items-center gap-1">
+                  <AlertCircle className="w-4 h-4" />
+                  {error}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Save Button */}
           <button
             onClick={handleSave}
-            disabled={!apiKey.trim()}
+            disabled={provider !== 'pollinations' && !apiKey.trim()}
             className={cn(
               'w-full py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2',
               saved
                 ? 'bg-green-500 text-white'
-                : apiKey.trim()
+                : (provider === 'pollinations' || apiKey.trim())
                   ? 'bg-brand-500 hover:bg-brand-600 text-white'
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed'
             )}
