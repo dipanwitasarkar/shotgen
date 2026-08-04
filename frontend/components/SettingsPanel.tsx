@@ -170,7 +170,10 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
       {/* Header - Always visible */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          console.log('Settings clicked, isOpen:', isOpen)
+          setIsOpen(!isOpen)
+        }}
         className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
       >
         <div className="flex items-center gap-3">

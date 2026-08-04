@@ -20,12 +20,13 @@ class NVIDIAProvider(AIProvider):
     
     def __init__(self, api_key: str):
         self.api_key = api_key
-        self.base_url = "https://api.nvcf.nvidia.com/v2/nvcf"
+        self.base_url = "https://ai.api.nvidia.com"
         self.client = httpx.AsyncClient(
             base_url=self.base_url,
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Accept": "application/json",
+                "Content-Type": "application/json",
             },
             timeout=120.0,
         )
@@ -45,52 +46,39 @@ class NVIDIAProvider(AIProvider):
         # Build prompt
         prompt = self._build_prompt(request)
         
-        # Convert product image to base64
-        buffer = io.BytesIO()
-        request.product_image.save(buffer, format="PNG")
-        image_b64 = base64.b64encode(buffer.getvalue()).decode()
-        
-        # Prepare request payload
+        # NVIDIA API payload (text-to-image only, no image input for Flux Schnell)
         payload = {
             "prompt": prompt,
-            "image": image_b64,
             "width": request.output_width,
             "height": request.output_height,
-            "num_outputs": request.num_variations,
-            "guidance_scale": 7.5,
-            "num_inference_steps": 4,  # Schnell is optimized for 4 steps
+            "steps": 4,  # Schnell is optimized for 4 steps
+            "cfg_scale": 3.5,
+            "samples": 1,  # NVIDIA only supports 1 sample at a time
         }
         
         if request.seed is not None:
             payload["seed"] = request.seed
         
-        # Call NVIDIA API
+        # Call NVIDIA API (generate multiple images sequentially if needed)
+        images = []
+        seeds = []
+        
         try:
-            response = await self.client.post(
-                "/pexec/functions/black-forest-labs/flux-schnell",
-                json=payload,
-            )
-            response.raise_for_status()
-            result = response.json()
-            
-            # Parse response and download images
-            images = []
-            seeds = []
-            
-            if "images" in result:
-                for img_data in result["images"]:
-                    # If base64 encoded
-                    if isinstance(img_data, str):
-                        img_bytes = base64.b64decode(img_data)
-                        img = Image.open(io.BytesIO(img_bytes))
-                        images.append(img)
-                    # If URL
-                    elif isinstance(img_data, dict) and "url" in img_data:
-                        img_response = await self.client.get(img_data["url"])
-                        img = Image.open(io.BytesIO(img_response.content))
-                        images.append(img)
+            for _ in range(request.num_variations):
+                response = await self.client.post(
+                    "/v1/genai/black-forest-labs/flux.1-schnell",
+                    json=payload,
+                )
+                response.raise_for_status()
+                result = response.json()
                 
-                seeds = result.get("seeds", [request.seed or 0] * len(images))
+                # NVIDIA returns base64 image in "image" field
+                if "image" in result:
+                    img_b64 = result["image"]
+                    img_bytes = base64.b64decode(img_b64)
+                    img = Image.open(io.BytesIO(img_bytes))
+                    images.append(img)
+                    seeds.append(result.get("seed", request.seed or 0))
             
             # Calculate generation time
             generation_time_ms = int((time.time() - start_time) * 1000)
