@@ -1,6 +1,8 @@
 # Adding New AI Providers and Models
 
-This guide shows you how to extend ShotGen with new AI providers and models.
+> **Note**: You can now add custom providers and models directly from the UI! Click Settings → "Add Custom" in the app. This guide is for developers who want to add providers that require custom API logic or contribute to the codebase.
+
+This guide shows you how to extend ShotGen with new AI providers and models in the code.
 
 ## Quick: Add Models to Existing Providers
 

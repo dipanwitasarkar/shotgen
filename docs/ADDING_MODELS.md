@@ -1,6 +1,8 @@
 # Quick Guide: Adding New Models
 
-This is the simplest way to add more models to existing providers.
+> **Note**: You can now add custom providers and models directly from the UI! Click Settings → "Add Custom" in the app. This guide is for developers who want to add models to the codebase permanently.
+
+This is the simplest way to add more models to existing providers in the code.
 
 ## Step 1: Find the Model ID
 

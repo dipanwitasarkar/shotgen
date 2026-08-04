@@ -15,6 +15,7 @@ Transform your product photos into professional lifestyle shots using AI. Upload
 - **Lighting Options** - Studio, Natural, Dramatic, Soft, Golden Hour, Neon
 - **Camera Angles** - Front, 45°, Top-down, Side, Low, Hero
 - **Multiple AI Backends** - Replicate, Stability AI, FAL.ai with runtime switching
+- **Custom Providers via UI** - Add any AI provider (OpenAI, Hugging Face, self-hosted) without code
 - **In-App API Key Configuration** - No need to edit .env files
 - **Self-Hostable** - Full control over your data and costs
 
@@ -209,6 +210,24 @@ GET    /api/v1/health           - Health check
 - **Image Processing**: Pillow, rembg, OpenCV
 - **AI**: Stable Diffusion, Flux, SD3 (via providers)
 - **HTTP**: httpx, uvicorn
+
+## Extending
+
+### Add Custom Providers (Easy - No Code!)
+
+Click Settings → "Add Custom" in the app to add any AI provider:
+- OpenAI, Hugging Face, Together AI
+- Self-hosted ComfyUI, A1111, InvokeAI
+- RunPod, Replicate custom models
+- Any REST API endpoint
+
+See [docs/CUSTOM_PROVIDERS_UI.md](docs/CUSTOM_PROVIDERS_UI.md) for examples.
+
+### Add Providers to Codebase (Advanced)
+
+For custom API logic or contributing to the project:
+- [docs/ADDING_MODELS.md](docs/ADDING_MODELS.md) - Add models to existing providers
+- [docs/ADDING_PROVIDERS.md](docs/ADDING_PROVIDERS.md) - Add new provider classes
 
 ## Contributing
 
