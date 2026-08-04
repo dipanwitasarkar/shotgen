@@ -191,9 +191,14 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
           <Settings className="w-5 h-5 text-gray-500" />
           <span className="font-semibold text-gray-900">Settings</span>
           {apiKey && (
-            <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">
-              Configured
-            </span>
+            <>
+              <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">
+                Configured
+              </span>
+              <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">
+                {currentProvider?.name} · {currentModels.find(m => m.id === model)?.name}
+              </span>
+            </>
           )}
         </div>
         {isOpen ? (

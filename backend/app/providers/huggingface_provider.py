@@ -21,6 +21,7 @@ class HuggingFaceProvider(AIProvider):
     
     def __init__(self, api_key: str):
         self.api_key = api_key
+        self.base_url = "https://api-inference.huggingface.co"
         self.client = httpx.AsyncClient(
             headers={
                 "Authorization": f"Bearer {api_key}",
@@ -47,7 +48,7 @@ class HuggingFaceProvider(AIProvider):
         model_id = self.MODELS.get("flux-schnell", self.MODELS["flux-schnell"])
         
         # Hugging Face Inference API endpoint
-        url = f"https://api-inference.huggingface.co/models/{model_id}"
+        endpoint = f"{self.base_url}/models/{model_id}"
         
         # Prepare payload
         payload = {
@@ -66,7 +67,7 @@ class HuggingFaceProvider(AIProvider):
             # Generate images (one at a time for HF)
             images = []
             for _ in range(request.num_variations):
-                response = await self.client.post(url, json=payload)
+                response = await self.client.post(endpoint, json=payload)
                 response.raise_for_status()
                 
                 # HF returns image bytes directly
