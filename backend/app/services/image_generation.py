@@ -146,3 +146,9 @@ def get_image_generation_service() -> ImageGenerationService:
     if _service is None:
         _service = ImageGenerationService()
     return _service
+
+
+def reset_service():
+    """Reset the service to pick up new settings."""
+    global _service
+    _service = None

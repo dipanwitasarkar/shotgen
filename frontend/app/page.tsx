@@ -1,11 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Sparkles, Zap, Camera } from 'lucide-react'
+import { Sparkles, Zap, Camera, AlertTriangle } from 'lucide-react'
 import { ImageUploader } from '@/components/ImageUploader'
 import { SceneSelector } from '@/components/SceneSelector'
 import { GenerationSettings } from '@/components/GenerationSettings'
 import { ResultGallery } from '@/components/ResultGallery'
+import { SettingsPanel, AppSettings } from '@/components/SettingsPanel'
 import { api, GenerationResult } from '@/lib/api'
 
 export default function Home() {
@@ -20,9 +21,21 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [result, setResult] = useState<GenerationResult | null>(null)
   const [error, setError] = useState<string | null>(null)
+  
+  // Settings state
+  const [appSettings, setAppSettings] = useState<AppSettings | null>(null)
+
+  const handleSettingsChange = (settings: AppSettings) => {
+    setAppSettings(settings)
+  }
 
   const handleGenerate = async () => {
     if (!selectedImage) return
+    
+    if (!appSettings?.apiKey) {
+      setError('Please configure your API key in Settings first')
+      return
+    }
 
     setIsGenerating(true)
     setError(null)
@@ -91,6 +104,20 @@ export default function Home() {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Left Column - Input */}
           <div className="space-y-6">
+            {/* Settings Panel - API Keys & Model Selection */}
+            <SettingsPanel onSettingsChange={handleSettingsChange} />
+            
+            {/* Warning if not configured */}
+            {!appSettings?.apiKey && (
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium">API Key Required</p>
+                  <p className="text-sm mt-1">Open Settings above to add your API key and select a model.</p>
+                </div>
+              </div>
+            )}
+            
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <Zap className="w-5 h-5 text-brand-500" />
@@ -109,7 +136,7 @@ export default function Home() {
 
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Settings
+                Generation Options
               </h2>
               <GenerationSettings
                 style={style}
@@ -126,7 +153,7 @@ export default function Home() {
             {/* Generate Button */}
             <button
               onClick={handleGenerate}
-              disabled={!selectedImage || isGenerating}
+              disabled={!selectedImage || isGenerating || !appSettings?.apiKey}
               className="w-full py-4 px-6 bg-brand-500 hover:bg-brand-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
             >
               <Sparkles className="w-5 h-5" />

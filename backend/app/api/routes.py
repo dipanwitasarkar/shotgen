@@ -4,7 +4,7 @@ API routes for ShotGen.
 import io
 import base64
 from typing import Annotated
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends, Header
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from PIL import Image
@@ -22,6 +22,18 @@ from app.providers.factory import ProviderFactory
 
 
 router = APIRouter()
+
+# Runtime settings storage (in production, use Redis or database)
+_runtime_settings: dict = {
+    "provider": None,
+    "model": None,
+    "api_key": None,
+}
+
+
+def get_runtime_settings():
+    """Get current runtime settings."""
+    return _runtime_settings
 
 
 # Response Models
@@ -53,6 +65,25 @@ class HealthResponse(BaseModel):
     status: str
     ai_provider: dict
     background_removal: dict
+
+
+class SettingsRequest(BaseModel):
+    """Settings update request."""
+    provider: str
+    model: str
+    apiKey: str
+
+
+class SettingsResponse(BaseModel):
+    """Settings response."""
+    provider: str
+    model: str
+    configured: bool
+
+
+class ModelsResponse(BaseModel):
+    """Available models response."""
+    models: dict[str, list[dict]]
 
 
 # Helper functions
@@ -181,9 +212,92 @@ async def get_providers():
 
 
 @router.get("/health", response_model=HealthResponse)
-async def health_check(
-    service: ImageGenerationService = Depends(get_image_generation_service),
-):
+async def health_check():
     """Check health of all services."""
-    health = await service.health_check()
-    return HealthResponse(**health)
+    from app.core.config import settings
+    
+    runtime = get_runtime_settings()
+    
+    # Check if API key is configured (runtime or env)
+    ai_healthy = False
+    ai_name = runtime.get("provider") or settings.ai_provider
+    
+    # Check runtime settings first, then env
+    if runtime.get("api_key"):
+        ai_healthy = True
+    elif settings.ai_provider == "replicate" and settings.replicate_api_token:
+        ai_healthy = True
+    elif settings.ai_provider == "stability" and settings.stability_api_key:
+        ai_healthy = True
+    
+    return HealthResponse(
+        status="healthy" if ai_healthy else "degraded",
+        ai_provider={
+            "name": ai_name,
+            "healthy": ai_healthy,
+            "message": "API key configured" if ai_healthy else "API key not configured - add in Settings panel"
+        },
+        background_removal={
+            "healthy": True,
+            "message": "rembg ready"
+        }
+    )
+
+
+@router.post("/settings", response_model=SettingsResponse)
+async def update_settings(request: SettingsRequest):
+    """Update runtime settings (provider, model, API key)."""
+    global _runtime_settings
+    
+    _runtime_settings["provider"] = request.provider
+    _runtime_settings["model"] = request.model
+    _runtime_settings["api_key"] = request.apiKey
+    
+    # Reset the cached service so it picks up new settings
+    from app.services.image_generation import reset_service
+    reset_service()
+    
+    return SettingsResponse(
+        provider=request.provider,
+        model=request.model,
+        configured=bool(request.apiKey),
+    )
+
+
+@router.get("/settings", response_model=SettingsResponse)
+async def get_settings():
+    """Get current settings."""
+    from app.core.config import settings
+    
+    runtime = get_runtime_settings()
+    
+    return SettingsResponse(
+        provider=runtime.get("provider") or settings.ai_provider,
+        model=runtime.get("model") or "flux-schnell",
+        configured=bool(runtime.get("api_key") or settings.replicate_api_token or settings.stability_api_key),
+    )
+
+
+@router.get("/models", response_model=ModelsResponse)
+async def get_available_models():
+    """Get available models for each provider."""
+    return ModelsResponse(
+        models={
+            "replicate": [
+                {"id": "sdxl", "name": "Stable Diffusion XL", "description": "Best quality, slower"},
+                {"id": "sdxl-lightning", "name": "SDXL Lightning", "description": "Fast, good quality"},
+                {"id": "flux-schnell", "name": "Flux Schnell", "description": "Very fast, free tier"},
+                {"id": "flux-dev", "name": "Flux Dev", "description": "High quality, slower"},
+            ],
+            "stability": [
+                {"id": "sd3", "name": "Stable Diffusion 3", "description": "Latest model"},
+                {"id": "sdxl-1.0", "name": "SDXL 1.0", "description": "Production ready"},
+                {"id": "sd-turbo", "name": "SD Turbo", "description": "Ultra fast"},
+            ],
+            "fal": [
+                {"id": "flux-pro", "name": "Flux Pro", "description": "Best quality"},
+                {"id": "flux-dev", "name": "Flux Dev", "description": "Development"},
+                {"id": "sdxl", "name": "SDXL", "description": "Stable Diffusion XL"},
+            ],
+        }
+    )
