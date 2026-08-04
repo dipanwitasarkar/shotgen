@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Sparkles, Zap, Camera, AlertTriangle } from 'lucide-react'
+import { Sparkles, Zap, Camera, AlertTriangle, AlertCircle } from 'lucide-react'
 import { ImageUploader } from '@/components/ImageUploader'
 import { SceneSelector } from '@/components/SceneSelector'
 import { GenerationSettings, ASPECT_RATIO_DIMENSIONS } from '@/components/GenerationSettings'
