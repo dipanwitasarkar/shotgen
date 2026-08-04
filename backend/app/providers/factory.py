@@ -8,6 +8,7 @@ from app.providers.stability_provider import StabilityProvider
 from app.providers.nvidia_provider import NVIDIAProvider
 from app.providers.together_provider import TogetherProvider
 from app.providers.huggingface_provider import HuggingFaceProvider
+from app.providers.google_provider import GoogleProvider
 
 
 class ProviderFactory:
@@ -15,6 +16,7 @@ class ProviderFactory:
     
     _providers: dict[str, type[AIProvider]] = {
         "nvidia": NVIDIAProvider,
+        "google": GoogleProvider,
         "together": TogetherProvider,
         "huggingface": HuggingFaceProvider,
         "replicate": ReplicateProvider,

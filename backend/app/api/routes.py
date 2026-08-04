@@ -286,6 +286,10 @@ async def get_available_models():
             "nvidia": [
                 {"id": "flux-schnell", "name": "Flux Schnell", "description": "NVIDIA NIM - Very fast, 4 steps"},
             ],
+            "google": [
+                {"id": "imagen-3-fast", "name": "Imagen 3 Fast", "description": "Google - Fast, $0.03/image"},
+                {"id": "imagen-3", "name": "Imagen 3", "description": "Google - Highest quality, $0.03/image"},
+            ],
             "together": [
                 {"id": "flux-schnell-free", "name": "FLUX.1 Schnell (Free)", "description": "Free tier - Fast, 4 steps"},
                 {"id": "flux-schnell", "name": "FLUX.1 Schnell", "description": "Fast, good quality"},

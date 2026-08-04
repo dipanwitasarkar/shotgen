@@ -41,6 +41,17 @@ const PROVIDERS: Provider[] = [
     ],
   },
   {
+    id: 'google',
+    name: 'Google Imagen 3',
+    description: 'Google AI, free tier coming soon',
+    apiKeyLabel: 'API Key',
+    keyUrl: 'https://aistudio.google.com/app/apikey',
+    models: [
+      { id: 'imagen-3-fast', name: 'Imagen 3 Fast', description: 'Google - Fast, $0.03/image' },
+      { id: 'imagen-3', name: 'Imagen 3', description: 'Google - Highest quality, $0.03/image' },
+    ],
+  },
+  {
     id: 'together',
     name: 'Together AI',
     description: 'Free tier available, fast inference',
