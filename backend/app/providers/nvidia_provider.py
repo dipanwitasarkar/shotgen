@@ -52,7 +52,6 @@ class NVIDIAProvider(AIProvider):
             "width": request.output_width,
             "height": request.output_height,
             "steps": 4,  # Schnell is optimized for 4 steps
-            "cfg_scale": 3.5,
             "samples": 1,  # NVIDIA only supports 1 sample at a time
         }
         
