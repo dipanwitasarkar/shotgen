@@ -32,15 +32,15 @@ interface Model {
 const PROVIDERS: Provider[] = [
   {
     id: 'pollinations',
-    name: 'Pollinations.ai ⭐ FREE',
-    description: 'Free, no API key (1 req/15s limit)',
-    apiKeyLabel: 'No API Key Needed',
-    keyUrl: '',
+    name: 'Pollinations.ai',
+    description: 'Free with signup, get API key',
+    apiKeyLabel: 'API Key',
+    keyUrl: 'https://pollinations.ai',
     models: [
-      { id: 'flux', name: 'FLUX', description: 'FREE - 1 request per 15 seconds' },
-      { id: 'flux-realism', name: 'FLUX Realism', description: 'FREE - Photorealistic' },
-      { id: 'flux-anime', name: 'FLUX Anime', description: 'FREE - Illustration style' },
-      { id: 'turbo', name: 'Turbo', description: 'FREE - Fastest' },
+      { id: 'flux', name: 'FLUX', description: 'Free with API key' },
+      { id: 'flux-realism', name: 'FLUX Realism', description: 'Photorealistic' },
+      { id: 'flux-anime', name: 'FLUX Anime', description: 'Illustration style' },
+      { id: 'turbo', name: 'Turbo', description: 'Fastest' },
     ],
   },
   {
@@ -157,13 +157,12 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
   }
 
   const handleSave = async () => {
-    // Pollinations doesn't need API key
-    if (provider !== 'pollinations' && !apiKey.trim()) {
+    if (!apiKey.trim()) {
       setError('API key is required')
       return
     }
 
-    const settings: AppSettings = { provider, model, apiKey: apiKey || 'no-key-needed' }
+    const settings: AppSettings = { provider, model, apiKey }
     
     // Save to localStorage
     localStorage.setItem('shotgen-settings', JSON.stringify(settings))
@@ -279,9 +278,8 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
             </div>
           </div>
 
-          {/* API Key Input - Hide for Pollinations */}
-          {provider !== 'pollinations' && (
-            <div className="space-y-3">
+          {/* API Key Input */}
+          <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
                   <Key className="w-4 h-4" />
@@ -322,17 +320,16 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
                 </p>
               )}
             </div>
-          )}
 
           {/* Save Button */}
           <button
             onClick={handleSave}
-            disabled={provider !== 'pollinations' && !apiKey.trim()}
+            disabled={!apiKey.trim()}
             className={cn(
               'w-full py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2',
               saved
                 ? 'bg-green-500 text-white'
-                : (provider === 'pollinations' || apiKey.trim())
+                : apiKey.trim()
                   ? 'bg-brand-500 hover:bg-brand-600 text-white'
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed'
             )}

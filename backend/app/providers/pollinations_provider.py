@@ -20,10 +20,14 @@ class PollinationsProvider(AIProvider):
         "turbo": "turbo",
     }
     
-    def __init__(self, api_key: str = ""):
-        # No API key needed, but accept it for compatibility
+    def __init__(self, api_key: str):
+        self.api_key = api_key
         self.base_url = "https://image.pollinations.ai/prompt"
+        headers = {}
+        if api_key:
+            headers["Authorization"] = f"Bearer {api_key}"
         self.client = httpx.AsyncClient(
+            headers=headers,
             timeout=120.0,
             follow_redirects=True,
         )
@@ -58,16 +62,14 @@ class PollinationsProvider(AIProvider):
                 else:
                     seed = (int(time.time()) + i) % 2147483647
                 
-                # Build URL with parameters
+                # Build URL with minimal parameters for free tier
                 # Note: Free tier has rate limits (1 req/15s for anonymous)
+                # Use simple parameters that don't require pollen
                 params = {
                     "width": request.output_width,
                     "height": request.output_height,
                     "seed": seed,
-                    "model": "flux",  # Use flux model
                     "nologo": "true",  # Remove watermark
-                    "enhance": "false",  # Disable enhance to avoid pollen costs
-                    "safe": "false",  # Disable safety filter
                 }
                 
                 # URL encode the prompt
@@ -75,7 +77,13 @@ class PollinationsProvider(AIProvider):
                 encoded_prompt = urllib.parse.quote(prompt)
                 url = f"{self.base_url}/{encoded_prompt}"
                 
+                print(f"[Pollinations] Requesting: {url} with params: {params}")
                 response = await self.client.get(url, params=params)
+                print(f"[Pollinations] Response status: {response.status_code}")
+                
+                if response.status_code != 200:
+                    print(f"[Pollinations] Error response: {response.text[:500]}")
+                
                 response.raise_for_status()
                 
                 # Pollinations returns image bytes directly

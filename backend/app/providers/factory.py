@@ -62,13 +62,10 @@ class ProviderFactory:
             elif name == "stability":
                 key = settings.stability_api_key
         
-        # Some providers don't need API keys (e.g., Pollinations)
-        providers_without_keys = ["pollinations"]
-        
-        if not key and name not in providers_without_keys:
+        if not key:
             raise ValueError(f"API key required for {name}. Configure in Settings panel.")
         
-        return cls._providers[name](key or "")
+        return cls._providers[name](key)
     
     @classmethod
     def list_providers(cls) -> list[str]:
