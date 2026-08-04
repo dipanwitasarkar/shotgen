@@ -45,16 +45,62 @@ class ImageGenerationService:
     Handles the full pipeline: background removal -> scene generation -> compositing
     """
     
-    # Pre-defined scene templates
+    # Pre-defined scene templates - organized by category
     SCENE_TEMPLATES = {
-        "white_studio": "clean white studio background, soft shadows, professional product photography",
-        "kitchen": "modern kitchen counter, marble surface, natural daylight from window",
-        "outdoor": "outdoor garden setting, natural greenery, soft sunlight",
-        "lifestyle": "cozy home interior, lifestyle setting, warm ambient lighting",
-        "minimal": "minimalist background, solid color, clean and simple",
-        "luxury": "luxury setting, dark marble, gold accents, dramatic lighting",
-        "nature": "natural setting with plants and wood textures, organic feel",
-        "tech": "modern tech environment, sleek surfaces, blue accent lighting",
+        # Studio & Professional
+        "white_studio": "clean white studio background, soft shadows, professional product photography, commercial quality",
+        "black_studio": "elegant black studio background, dramatic rim lighting, high-end product photography",
+        "gradient_studio": "smooth gradient background, professional studio lighting, clean commercial look",
+        "minimal": "minimalist background, solid neutral color, clean and simple, modern aesthetic",
+        
+        # Home & Living
+        "kitchen": "modern kitchen counter, marble surface, natural daylight from window, lifestyle photography",
+        "bathroom": "luxury bathroom vanity, marble countertop, soft natural light, spa-like atmosphere",
+        "living_room": "cozy living room setting, soft sofa, warm ambient lighting, lifestyle feel",
+        "bedroom": "elegant bedroom setting, soft bedding, morning light through curtains, peaceful mood",
+        "dining": "dining table setting, elegant tableware, warm candlelight ambiance, dinner party mood",
+        "office": "modern home office desk, clean workspace, natural window light, productive atmosphere",
+        
+        # Outdoor & Nature
+        "outdoor": "outdoor garden setting, natural greenery, soft sunlight, fresh organic feel",
+        "beach": "sandy beach setting, ocean waves in background, golden hour sunlight, vacation vibes",
+        "forest": "forest floor setting, moss and ferns, dappled sunlight through trees, natural organic",
+        "mountain": "mountain landscape background, crisp clean air feel, adventure outdoor setting",
+        "park": "city park setting, green grass, trees, natural daylight, urban nature",
+        
+        # Lifestyle & Social
+        "cafe": "cozy cafe table, coffee shop ambiance, warm lighting, rustic wood textures",
+        "restaurant": "upscale restaurant table, elegant dining setting, ambient mood lighting",
+        "gym": "modern fitness studio, gym equipment background, energetic lighting, active lifestyle",
+        "yoga": "peaceful yoga studio, natural materials, soft diffused light, zen atmosphere",
+        "pool": "poolside setting, blue water reflections, summer vibes, resort luxury",
+        
+        # Luxury & Premium
+        "luxury": "luxury setting, dark marble, gold accents, dramatic lighting, premium feel",
+        "jewelry": "velvet display surface, soft spotlight, luxury jewelry presentation, elegant",
+        "fashion": "fashion runway backdrop, dramatic lighting, high-end editorial style",
+        "art_gallery": "white gallery wall, museum lighting, artistic presentation, sophisticated",
+        
+        # Tech & Modern
+        "tech": "modern tech environment, sleek surfaces, blue accent lighting, futuristic feel",
+        "gaming": "RGB gaming setup, neon accents, dark background, tech enthusiast aesthetic",
+        "workspace": "modern workspace, clean desk setup, tech accessories, productivity aesthetic",
+        
+        # Seasonal & Holiday
+        "christmas": "festive holiday setting, christmas decorations, warm cozy lighting, winter mood",
+        "autumn": "autumn leaves, warm orange tones, rustic wood, harvest season feel",
+        "spring": "fresh spring flowers, pastel colors, bright natural light, renewal theme",
+        "summer": "bright summer setting, vibrant colors, outdoor sunshine, energetic mood",
+        
+        # Food & Beverage
+        "food_flat": "flat lay food photography, marble surface, ingredients scattered artfully",
+        "rustic_food": "rustic wooden table, natural ingredients, farmhouse kitchen style",
+        "bar": "cocktail bar setting, dark moody lighting, sophisticated drinks presentation",
+        
+        # Nature & Organic
+        "nature": "natural setting with plants and wood textures, organic feel, earthy tones",
+        "botanical": "botanical garden setting, lush greenery, natural light, plant lover aesthetic",
+        "stone": "natural stone surface, raw textures, earthy organic feel, grounded aesthetic",
     }
     
     def __init__(self):

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Sparkles, Zap, Camera, AlertTriangle } from 'lucide-react'
 import { ImageUploader } from '@/components/ImageUploader'
 import { SceneSelector } from '@/components/SceneSelector'
-import { GenerationSettings } from '@/components/GenerationSettings'
+import { GenerationSettings, ASPECT_RATIO_DIMENSIONS } from '@/components/GenerationSettings'
 import { ResultGallery } from '@/components/ResultGallery'
 import { SettingsPanel, AppSettings } from '@/components/SettingsPanel'
 import { api, GenerationResult } from '@/lib/api'
@@ -13,9 +13,12 @@ export default function Home() {
   // State
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [scene, setScene] = useState('white_studio')
+  const [customPrompt, setCustomPrompt] = useState('')
   const [style, setStyle] = useState('realistic')
   const [lighting, setLighting] = useState('studio')
   const [angle, setAngle] = useState('front')
+  const [aspectRatio, setAspectRatio] = useState('1:1')
+  const [quality, setQuality] = useState(50)
   const [variations, setVariations] = useState(2)
   
   const [isGenerating, setIsGenerating] = useState(false)
@@ -41,12 +44,20 @@ export default function Home() {
     setError(null)
     setResult(null)
 
+    // Get dimensions from aspect ratio
+    const dimensions = ASPECT_RATIO_DIMENSIONS[aspectRatio] || { width: 1024, height: 1024 }
+    
+    // Use custom prompt if provided, otherwise use scene template
+    const sceneToUse = customPrompt.trim() || scene
+
     try {
       const generationResult = await api.generateProductShot(selectedImage, {
-        scene,
+        scene: sceneToUse,
         style,
         lighting,
         angle,
+        width: dimensions.width,
+        height: dimensions.height,
         variations,
         removeBackground: true,
       })
@@ -131,7 +142,12 @@ export default function Home() {
             </div>
 
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-              <SceneSelector selected={scene} onSelect={setScene} />
+              <SceneSelector 
+                selected={scene} 
+                customPrompt={customPrompt}
+                onSelect={setScene} 
+                onCustomPromptChange={setCustomPrompt}
+              />
             </div>
 
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
@@ -142,10 +158,14 @@ export default function Home() {
                 style={style}
                 lighting={lighting}
                 angle={angle}
+                aspectRatio={aspectRatio}
+                quality={quality}
                 variations={variations}
                 onStyleChange={setStyle}
                 onLightingChange={setLighting}
                 onAngleChange={setAngle}
+                onAspectRatioChange={setAspectRatio}
+                onQualityChange={setQuality}
                 onVariationsChange={setVariations}
               />
             </div>

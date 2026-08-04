@@ -6,62 +6,111 @@ interface GenerationSettingsProps {
   style: string
   lighting: string
   angle: string
+  aspectRatio: string
+  quality: number
   variations: number
   onStyleChange: (style: string) => void
   onLightingChange: (lighting: string) => void
   onAngleChange: (angle: string) => void
+  onAspectRatioChange: (ratio: string) => void
+  onQualityChange: (quality: number) => void
   onVariationsChange: (variations: number) => void
 }
 
 const STYLES = [
-  { id: 'realistic', name: 'Realistic' },
-  { id: 'artistic', name: 'Artistic' },
-  { id: 'minimal', name: 'Minimal' },
-  { id: 'lifestyle', name: 'Lifestyle' },
+  { id: 'realistic', name: 'Realistic', description: 'Photo-realistic' },
+  { id: 'artistic', name: 'Artistic', description: 'Creative style' },
+  { id: 'minimal', name: 'Minimal', description: 'Clean & simple' },
+  { id: 'lifestyle', name: 'Lifestyle', description: 'Natural feel' },
+  { id: 'editorial', name: 'Editorial', description: 'Magazine style' },
+  { id: 'cinematic', name: 'Cinematic', description: 'Movie-like' },
 ]
 
 const LIGHTING = [
-  { id: 'studio', name: 'Studio' },
-  { id: 'natural', name: 'Natural' },
-  { id: 'dramatic', name: 'Dramatic' },
-  { id: 'soft', name: 'Soft' },
+  { id: 'studio', name: 'Studio', description: 'Professional' },
+  { id: 'natural', name: 'Natural', description: 'Window light' },
+  { id: 'dramatic', name: 'Dramatic', description: 'High contrast' },
+  { id: 'soft', name: 'Soft', description: 'Diffused' },
+  { id: 'golden_hour', name: 'Golden Hour', description: 'Warm sunset' },
+  { id: 'neon', name: 'Neon', description: 'Colorful glow' },
 ]
 
 const ANGLES = [
-  { id: 'front', name: 'Front' },
-  { id: '45-degree', name: '45 Degree' },
-  { id: 'top-down', name: 'Top Down' },
-  { id: 'side', name: 'Side' },
+  { id: 'front', name: 'Front', icon: '⬆️' },
+  { id: '45-degree', name: '45°', icon: '↗️' },
+  { id: 'top-down', name: 'Top', icon: '⬇️' },
+  { id: 'side', name: 'Side', icon: '➡️' },
+  { id: 'low', name: 'Low', icon: '📐' },
+  { id: 'hero', name: 'Hero', icon: '🦸' },
+]
+
+const ASPECT_RATIOS = [
+  { id: '1:1', name: 'Square', width: 1024, height: 1024, icon: '⬜' },
+  { id: '4:3', name: 'Standard', width: 1024, height: 768, icon: '🖼️' },
+  { id: '3:4', name: 'Portrait', width: 768, height: 1024, icon: '📱' },
+  { id: '16:9', name: 'Wide', width: 1024, height: 576, icon: '🖥️' },
+  { id: '9:16', name: 'Story', width: 576, height: 1024, icon: '📲' },
+  { id: '3:2', name: 'Photo', width: 1024, height: 683, icon: '📷' },
 ]
 
 export function GenerationSettings({
   style,
   lighting,
   angle,
+  aspectRatio,
+  quality,
   variations,
   onStyleChange,
   onLightingChange,
   onAngleChange,
+  onAspectRatioChange,
+  onQualityChange,
   onVariationsChange,
 }: GenerationSettingsProps) {
   return (
     <div className="space-y-6">
+      {/* Aspect Ratio */}
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700">Aspect Ratio</label>
+        <div className="grid grid-cols-6 gap-2">
+          {ASPECT_RATIOS.map((ratio) => (
+            <button
+              key={ratio.id}
+              onClick={() => onAspectRatioChange(ratio.id)}
+              className={cn(
+                'flex flex-col items-center p-2 rounded-lg border-2 transition-all',
+                aspectRatio === ratio.id
+                  ? 'border-brand-500 bg-brand-50 text-brand-700'
+                  : 'border-gray-200 hover:border-gray-300 text-gray-600'
+              )}
+            >
+              <span className="text-lg">{ratio.icon}</span>
+              <span className="text-xs font-medium mt-1">{ratio.name}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Style */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">Style</label>
-        <div className="flex gap-2">
+        <div className="grid grid-cols-3 gap-2">
           {STYLES.map((s) => (
             <button
               key={s.id}
               onClick={() => onStyleChange(s.id)}
               className={cn(
-                'px-4 py-2 rounded-lg text-sm font-medium transition-all',
+                'px-3 py-2 rounded-lg text-sm font-medium transition-all text-left',
                 style === s.id
                   ? 'bg-brand-500 text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               )}
             >
-              {s.name}
+              <div>{s.name}</div>
+              <div className={cn(
+                'text-xs mt-0.5',
+                style === s.id ? 'text-brand-100' : 'text-gray-400'
+              )}>{s.description}</div>
             </button>
           ))}
         </div>
@@ -70,19 +119,23 @@ export function GenerationSettings({
       {/* Lighting */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">Lighting</label>
-        <div className="flex gap-2">
+        <div className="grid grid-cols-3 gap-2">
           {LIGHTING.map((l) => (
             <button
               key={l.id}
               onClick={() => onLightingChange(l.id)}
               className={cn(
-                'px-4 py-2 rounded-lg text-sm font-medium transition-all',
+                'px-3 py-2 rounded-lg text-sm font-medium transition-all text-left',
                 lighting === l.id
                   ? 'bg-brand-500 text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               )}
             >
-              {l.name}
+              <div>{l.name}</div>
+              <div className={cn(
+                'text-xs mt-0.5',
+                lighting === l.id ? 'text-brand-100' : 'text-gray-400'
+              )}>{l.description}</div>
             </button>
           ))}
         </div>
@@ -90,30 +143,59 @@ export function GenerationSettings({
 
       {/* Angle */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">Angle</label>
-        <div className="flex gap-2">
+        <label className="block text-sm font-medium text-gray-700">Camera Angle</label>
+        <div className="grid grid-cols-6 gap-2">
           {ANGLES.map((a) => (
             <button
               key={a.id}
               onClick={() => onAngleChange(a.id)}
               className={cn(
-                'px-4 py-2 rounded-lg text-sm font-medium transition-all',
+                'flex flex-col items-center p-2 rounded-lg border-2 transition-all',
                 angle === a.id
-                  ? 'bg-brand-500 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'border-brand-500 bg-brand-50 text-brand-700'
+                  : 'border-gray-200 hover:border-gray-300 text-gray-600'
               )}
             >
-              {a.name}
+              <span className="text-lg">{a.icon}</span>
+              <span className="text-xs font-medium mt-1">{a.name}</span>
             </button>
           ))}
         </div>
       </div>
 
+      {/* Quality Slider */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="block text-sm font-medium text-gray-700">
+            Quality
+          </label>
+          <span className="text-sm text-gray-500">
+            {quality <= 30 ? 'Fast' : quality <= 60 ? 'Balanced' : 'High Quality'}
+          </span>
+        </div>
+        <input
+          type="range"
+          min={10}
+          max={100}
+          step={10}
+          value={quality}
+          onChange={(e) => onQualityChange(parseInt(e.target.value))}
+          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-500"
+        />
+        <div className="flex justify-between text-xs text-gray-400">
+          <span>Faster</span>
+          <span>Better</span>
+        </div>
+      </div>
+
       {/* Variations */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Variations: {variations}
-        </label>
+        <div className="flex items-center justify-between">
+          <label className="block text-sm font-medium text-gray-700">
+            Variations
+          </label>
+          <span className="text-sm font-medium text-brand-600">{variations}</span>
+        </div>
         <input
           type="range"
           min={1}
@@ -122,11 +204,23 @@ export function GenerationSettings({
           onChange={(e) => onVariationsChange(parseInt(e.target.value))}
           className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-500"
         />
-        <div className="flex justify-between text-xs text-gray-500">
+        <div className="flex justify-between text-xs text-gray-400">
           <span>1</span>
+          <span>2</span>
+          <span>3</span>
           <span>4</span>
         </div>
       </div>
     </div>
   )
+}
+
+// Export aspect ratio dimensions for use in API calls
+export const ASPECT_RATIO_DIMENSIONS: Record<string, { width: number; height: number }> = {
+  '1:1': { width: 1024, height: 1024 },
+  '4:3': { width: 1024, height: 768 },
+  '3:4': { width: 768, height: 1024 },
+  '16:9': { width: 1024, height: 576 },
+  '9:16': { width: 576, height: 1024 },
+  '3:2': { width: 1024, height: 683 },
 }
