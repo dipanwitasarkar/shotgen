@@ -14,8 +14,8 @@ Transform your product photos into professional lifestyle shots using AI. Upload
 - **Style Options** - Realistic, Artistic, Minimal, Lifestyle, Editorial, Cinematic
 - **Lighting Options** - Studio, Natural, Dramatic, Soft, Golden Hour, Neon
 - **Camera Angles** - Front, 45°, Top-down, Side, Low, Hero
-- **Multiple AI Backends** - Replicate, Stability AI, FAL.ai with runtime switching
-- **Custom Providers via UI** - Add any AI provider (OpenAI, Hugging Face, self-hosted) without code
+- **5 AI Providers** - NVIDIA NIM, Together AI (free), Hugging Face (free), Replicate, Stability AI
+- **Free Tier Options** - Together AI and Hugging Face offer free inference
 - **In-App API Key Configuration** - No need to edit .env files
 - **Self-Hostable** - Full control over your data and costs
 
@@ -93,9 +93,11 @@ DATABASE_URL=postgresql://user:pass@localhost:5432/shotgen
 
 ### Get API Keys
 
+- **NVIDIA NIM**: https://build.nvidia.com/explore/discover
+- **Together AI** ⭐ (Free tier): https://api.together.ai/settings/api-keys
+- **Hugging Face** ⭐ (All free): https://huggingface.co/settings/tokens
 - **Replicate**: https://replicate.com/account/api-tokens
 - **Stability AI**: https://platform.stability.ai/account/keys
-- **FAL.ai**: https://fal.ai/dashboard/keys
 
 ## Usage
 
@@ -160,6 +162,20 @@ shotgen/
 
 ## AI Providers & Models
 
+### NVIDIA NIM
+- **Flux Schnell** - NVIDIA NIM - Very fast, 4 steps
+
+### Together AI ⭐ (Free Tier Available)
+- **FLUX.1 Schnell (Free)** - Free tier - Fast, 4 steps
+- **FLUX.1 Schnell** - Fast, good quality
+- **FLUX.2 Dev** - High quality, customizable
+- **FLUX.1.1 Pro** - Best quality
+
+### Hugging Face ⭐ (All Free)
+- **FLUX.1 Schnell** - Free tier - Fast
+- **Stable Diffusion XL** - Free tier - High quality
+- **SDXL Turbo** - Free tier - Ultra fast
+
 ### Replicate
 - **SDXL** - Best quality, slower
 - **SDXL Lightning** - Fast, good quality
@@ -170,11 +186,6 @@ shotgen/
 - **Stable Diffusion 3** - Latest model
 - **SDXL 1.0** - Production ready
 - **SD Turbo** - Ultra fast
-
-### FAL.ai
-- **Flux Pro** - Best quality
-- **Flux Dev** - Development
-- **SDXL** - Stable Diffusion XL
 
 ## API Endpoints
 
