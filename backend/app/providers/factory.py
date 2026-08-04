@@ -6,18 +6,19 @@ from app.providers.base import AIProvider
 from app.providers.replicate_provider import ReplicateProvider
 from app.providers.stability_provider import StabilityProvider
 from app.providers.nvidia_provider import NVIDIAProvider
+from app.providers.together_provider import TogetherProvider
+from app.providers.huggingface_provider import HuggingFaceProvider
 
 
 class ProviderFactory:
     """Factory for creating AI provider instances."""
     
     _providers: dict[str, type[AIProvider]] = {
+        "nvidia": NVIDIAProvider,
+        "together": TogetherProvider,
+        "huggingface": HuggingFaceProvider,
         "replicate": ReplicateProvider,
         "stability": StabilityProvider,
-        "nvidia": NVIDIAProvider,
-        # Add more providers here:
-        # "comfyui": ComfyUIProvider,
-        # "fal": FALProvider,
     }
     
     @classmethod

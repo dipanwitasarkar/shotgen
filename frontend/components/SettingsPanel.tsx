@@ -41,6 +41,31 @@ const PROVIDERS: Provider[] = [
     ],
   },
   {
+    id: 'together',
+    name: 'Together AI',
+    description: 'Free tier available, fast inference',
+    apiKeyLabel: 'API Key',
+    keyUrl: 'https://api.together.ai/settings/api-keys',
+    models: [
+      { id: 'flux-schnell-free', name: 'FLUX.1 Schnell (Free)', description: 'Free tier - Fast, 4 steps' },
+      { id: 'flux-schnell', name: 'FLUX.1 Schnell', description: 'Fast, good quality' },
+      { id: 'flux-dev', name: 'FLUX.2 Dev', description: 'High quality, customizable' },
+      { id: 'flux-pro', name: 'FLUX.1.1 Pro', description: 'Best quality' },
+    ],
+  },
+  {
+    id: 'huggingface',
+    name: 'Hugging Face',
+    description: 'Free inference API, community models',
+    apiKeyLabel: 'Access Token',
+    keyUrl: 'https://huggingface.co/settings/tokens',
+    models: [
+      { id: 'flux-schnell', name: 'FLUX.1 Schnell', description: 'Free tier - Fast' },
+      { id: 'sdxl', name: 'Stable Diffusion XL', description: 'Free tier - High quality' },
+      { id: 'sd-turbo', name: 'SDXL Turbo', description: 'Free tier - Ultra fast' },
+    ],
+  },
+  {
     id: 'replicate',
     name: 'Replicate',
     description: 'Easy to use, pay-per-use pricing',
@@ -63,18 +88,6 @@ const PROVIDERS: Provider[] = [
       { id: 'sd3', name: 'Stable Diffusion 3', description: 'Latest model' },
       { id: 'sdxl-1.0', name: 'SDXL 1.0', description: 'Production ready' },
       { id: 'sd-turbo', name: 'SD Turbo', description: 'Ultra fast' },
-    ],
-  },
-  {
-    id: 'fal',
-    name: 'FAL.ai',
-    description: 'Fast inference, good pricing',
-    apiKeyLabel: 'API Key',
-    keyUrl: 'https://fal.ai/dashboard/keys',
-    models: [
-      { id: 'flux-pro', name: 'Flux Pro', description: 'Best quality' },
-      { id: 'flux-dev', name: 'Flux Dev', description: 'Development' },
-      { id: 'sdxl', name: 'SDXL', description: 'Stable Diffusion XL' },
     ],
   },
 ]
@@ -184,7 +197,7 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
             <label className="block text-sm font-medium text-gray-700">
               AI Provider
             </label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               {PROVIDERS.map((p) => (
                 <button
                   key={p.id}

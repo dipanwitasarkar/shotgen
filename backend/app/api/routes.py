@@ -283,6 +283,20 @@ async def get_available_models():
     """Get available models for each provider."""
     return ModelsResponse(
         models={
+            "nvidia": [
+                {"id": "flux-schnell", "name": "Flux Schnell", "description": "NVIDIA NIM - Very fast, 4 steps"},
+            ],
+            "together": [
+                {"id": "flux-schnell-free", "name": "FLUX.1 Schnell (Free)", "description": "Free tier - Fast, 4 steps"},
+                {"id": "flux-schnell", "name": "FLUX.1 Schnell", "description": "Fast, good quality"},
+                {"id": "flux-dev", "name": "FLUX.2 Dev", "description": "High quality, customizable"},
+                {"id": "flux-pro", "name": "FLUX.1.1 Pro", "description": "Best quality"},
+            ],
+            "huggingface": [
+                {"id": "flux-schnell", "name": "FLUX.1 Schnell", "description": "Free tier - Fast"},
+                {"id": "sdxl", "name": "Stable Diffusion XL", "description": "Free tier - High quality"},
+                {"id": "sd-turbo", "name": "SDXL Turbo", "description": "Free tier - Ultra fast"},
+            ],
             "replicate": [
                 {"id": "sdxl", "name": "Stable Diffusion XL", "description": "Best quality, slower"},
                 {"id": "sdxl-lightning", "name": "SDXL Lightning", "description": "Fast, good quality"},
@@ -293,14 +307,6 @@ async def get_available_models():
                 {"id": "sd3", "name": "Stable Diffusion 3", "description": "Latest model"},
                 {"id": "sdxl-1.0", "name": "SDXL 1.0", "description": "Production ready"},
                 {"id": "sd-turbo", "name": "SD Turbo", "description": "Ultra fast"},
-            ],
-            "fal": [
-                {"id": "flux-pro", "name": "Flux Pro", "description": "Best quality"},
-                {"id": "flux-dev", "name": "Flux Dev", "description": "Development"},
-                {"id": "sdxl", "name": "SDXL", "description": "Stable Diffusion XL"},
-            ],
-            "nvidia": [
-                {"id": "flux-schnell", "name": "Flux Schnell", "description": "NVIDIA NIM - Very fast, 4 steps"},
             ],
         }
     )
