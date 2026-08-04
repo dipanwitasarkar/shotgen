@@ -181,8 +181,25 @@ export default function Home() {
             </button>
 
             {error && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700">
-                {error}
+              <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-semibold text-red-900 mb-1">Generation Failed</h3>
+                    <p className="text-sm text-red-700 break-words">
+                      {error.includes('error') || error.includes('Error') 
+                        ? error.split(':')[0] + (error.includes(':') ? ': ' + error.split(':').slice(1).join(':').substring(0, 150) : '')
+                        : error.substring(0, 200)}
+                      {error.length > 200 && '...'}
+                    </p>
+                    <button
+                      onClick={() => setError(null)}
+                      className="mt-2 text-xs text-red-600 hover:text-red-800 underline"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>

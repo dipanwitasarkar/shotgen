@@ -52,7 +52,11 @@ class PollinationsProvider(AIProvider):
         try:
             for i in range(request.num_variations):
                 # Use different seeds for variations
-                seed = request.seed if request.seed else int(time.time() * 1000) + i
+                # Pollinations max seed is 2147483647 (32-bit signed int max)
+                if request.seed:
+                    seed = min(request.seed + i, 2147483647)
+                else:
+                    seed = (int(time.time()) + i) % 2147483647
                 
                 # Build URL with parameters
                 params = {
@@ -89,9 +93,23 @@ class PollinationsProvider(AIProvider):
             )
             
         except httpx.HTTPStatusError as e:
-            raise Exception(f"Pollinations.ai error: {e.response.status_code} - {e.response.text}")
+            # Extract user-friendly error message
+            error_msg = "Service temporarily unavailable"
+            try:
+                error_data = e.response.json()
+                if "message" in error_data:
+                    error_msg = error_data["message"]
+                elif "error" in error_data and isinstance(error_data["error"], dict):
+                    error_msg = error_data["error"].get("message", error_msg)
+            except:
+                pass
+            raise Exception(f"Pollinations.ai: {error_msg}")
         except Exception as e:
-            raise Exception(f"Pollinations.ai generation failed: {str(e)}")
+            # Clean up error message
+            error_str = str(e)
+            if "Pollinations.ai" not in error_str:
+                raise Exception(f"Pollinations.ai: {error_str}")
+            raise
     
     def _build_prompt(self, request: GenerationRequest) -> str:
         """Build prompt for Pollinations.ai."""
