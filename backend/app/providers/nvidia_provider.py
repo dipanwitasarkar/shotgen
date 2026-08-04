@@ -22,6 +22,7 @@ class NVIDIAProvider(AIProvider):
         self.api_key = api_key
         self.base_url = "https://api.nvcf.nvidia.com/v2/nvcf"
         self.client = httpx.AsyncClient(
+            base_url=self.base_url,
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Accept": "application/json",
