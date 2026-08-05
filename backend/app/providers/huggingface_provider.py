@@ -23,6 +23,7 @@ class HuggingFaceProvider(AIProvider):
         self.api_key = api_key
         self.base_url = "https://api-inference.huggingface.co"
         self.client = httpx.AsyncClient(
+            base_url=self.base_url,
             headers={
                 "Authorization": f"Bearer {api_key}",
             },
