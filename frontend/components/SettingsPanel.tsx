@@ -63,6 +63,8 @@ const PROVIDERS: Provider[] = [
     keyUrl: 'https://build.nvidia.com/explore/discover',
     models: [
       { id: 'flux-schnell', name: 'Flux Schnell', description: 'NVIDIA NIM - Very fast, 4 steps' },
+      { id: 'qwen-image', name: 'Qwen-Image', description: 'Advanced multilingual text rendering' },
+      { id: 'qwen-image-2512', name: 'Qwen-Image 2512', description: 'Latest version (Dec 2025)' },
     ],
   },
   {

@@ -283,6 +283,11 @@ async def get_available_models():
     """Get available models for each provider."""
     return ModelsResponse(
         models={
+            "nvidia": [
+                {"id": "flux-schnell", "name": "Flux Schnell", "description": "NVIDIA NIM - Very fast, 4 steps"},
+                {"id": "qwen-image", "name": "Qwen-Image", "description": "Advanced multilingual text rendering"},
+                {"id": "qwen-image-2512", "name": "Qwen-Image 2512", "description": "Latest version (Dec 2025)"},
+            ],
             "together": [
                 {"id": "flux-schnell-free", "name": "FLUX.1 Schnell (Free)", "description": "⭐ FREE - 3 months unlimited"},
                 {"id": "flux-schnell", "name": "FLUX.1 Schnell", "description": "Fast, good quality"},

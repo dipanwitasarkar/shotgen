@@ -12,10 +12,12 @@ from app.providers.base import AIProvider, GenerationRequest, GenerationResult
 
 
 class NVIDIAProvider(AIProvider):
-    """NVIDIA NIM API provider using Flux models."""
+    """NVIDIA NIM API provider using Flux and Qwen-Image models."""
     
     MODELS = {
         "flux-schnell": "black-forest-labs/flux-schnell",
+        "qwen-image": "qwen/qwen-image",
+        "qwen-image-2512": "qwen/qwen-image-2512",
     }
     
     def __init__(self, api_key: str):
@@ -46,12 +48,18 @@ class NVIDIAProvider(AIProvider):
         # Build prompt
         prompt = self._build_prompt(request)
         
-        # NVIDIA API payload (text-to-image only, no image input for Flux Schnell)
+        # Get model endpoint - use runtime settings model if available
+        from app.providers.factory import get_runtime_settings
+        runtime = get_runtime_settings()
+        model_key = runtime.get("model", "flux-schnell")
+        model_path = self.MODELS.get(model_key, self.MODELS["flux-schnell"])
+        
+        # NVIDIA API payload
         payload = {
             "prompt": prompt,
             "width": request.output_width,
             "height": request.output_height,
-            "steps": 4,  # Schnell is optimized for 4 steps
+            "steps": 4,  # Schnell/Qwen optimized for 4 steps
             "samples": 1,  # NVIDIA only supports 1 sample at a time
         }
         
@@ -64,8 +72,11 @@ class NVIDIAProvider(AIProvider):
         
         try:
             for _ in range(request.num_variations):
+                # Build endpoint based on model
+                # Convert model path like "qwen/qwen-image" to endpoint format
+                endpoint = f"/v1/genai/{model_path}"
                 response = await self.client.post(
-                    "/v1/genai/black-forest-labs/flux.1-schnell",
+                    endpoint,
                     json=payload,
                 )
                 response.raise_for_status()
