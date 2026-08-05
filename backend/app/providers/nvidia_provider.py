@@ -51,23 +51,37 @@ class NVIDIAProvider(AIProvider):
         # Build prompt
         prompt = self._build_prompt(request)
         
-        # Get model endpoint - use runtime settings model if available
+        # Get model - use runtime settings model if available
         from app.api.routes import get_runtime_settings
         runtime = get_runtime_settings()
         model_key = runtime.get("model", "flux-schnell")
-        model_path = self.MODELS.get(model_key, self.MODELS["flux-schnell"])
+        model_name = self.MODELS.get(model_key, self.MODELS["flux-schnell"])
         
-        # NVIDIA API payload
+        # NVIDIA uses OpenAI-compatible endpoints
+        # Generation: /v1/images/generations
+        # Editing: /v1/images/edits
+        
+        is_edit_model = "edit" in model_key
+        endpoint = "/v1/images/edits" if is_edit_model else "/v1/images/generations"
+        
+        # OpenAI-compatible payload
         payload = {
+            "model": model_name,
             "prompt": prompt,
-            "width": request.output_width,
-            "height": request.output_height,
-            "steps": 4,  # Schnell/Qwen optimized for 4 steps
-            "samples": 1,  # NVIDIA only supports 1 sample at a time
+            "n": 1,  # NVIDIA only supports 1 sample at a time
+            "size": f"{request.output_width}x{request.output_height}",
         }
         
         if request.seed is not None:
             payload["seed"] = request.seed
+        
+        # For edit models, add the uploaded image
+        if is_edit_model and hasattr(request, 'input_image') and request.input_image:
+            # Convert PIL image to base64
+            buffered = io.BytesIO()
+            request.input_image.save(buffered, format="PNG")
+            img_b64 = base64.b64encode(buffered.getvalue()).decode()
+            payload["image"] = f"data:image/png;base64,{img_b64}"
         
         # Call NVIDIA API (generate multiple images sequentially if needed)
         images = []
@@ -75,25 +89,6 @@ class NVIDIAProvider(AIProvider):
         
         try:
             for _ in range(request.num_variations):
-                # Build endpoint based on model type
-                # Edit models use different endpoint
-                if "edit" in model_key:
-                    # For edit models, we need the uploaded image
-                    # Note: This is a workaround - edit models need input image
-                    endpoint = f"/v1/genai/{model_path}"
-                    # Add image to payload if available
-                    if hasattr(request, 'input_image') and request.input_image:
-                        # Convert PIL image to base64
-                        import io
-                        import base64
-                        buffered = io.BytesIO()
-                        request.input_image.save(buffered, format="PNG")
-                        img_b64 = base64.b64encode(buffered.getvalue()).decode()
-                        payload["image"] = img_b64
-                else:
-                    # Generation models
-                    endpoint = f"/v1/genai/{model_path}"
-                
                 response = await self.client.post(
                     endpoint,
                     json=payload,
@@ -101,13 +96,21 @@ class NVIDIAProvider(AIProvider):
                 response.raise_for_status()
                 result = response.json()
                 
-                # NVIDIA returns base64 image in "image" field
-                if "image" in result:
-                    img_b64 = result["image"]
-                    img_bytes = base64.b64decode(img_b64)
-                    img = Image.open(io.BytesIO(img_bytes))
-                    images.append(img)
-                    seeds.append(result.get("seed", request.seed or 0))
+                # OpenAI-compatible response format
+                # {"data": [{"b64_json": "...", "revised_prompt": "..."}]}
+                if "data" in result and len(result["data"]) > 0:
+                    img_data = result["data"][0]
+                    if "b64_json" in img_data:
+                        img_b64 = img_data["b64_json"]
+                        img_bytes = base64.b64decode(img_b64)
+                        img = Image.open(io.BytesIO(img_bytes))
+                        images.append(img)
+                        seeds.append(request.seed or 0)
+                    elif "url" in img_data:
+                        # Some models return URL instead
+                        raise Exception("URL response not supported yet")
+                else:
+                    raise Exception(f"Unexpected response format: {result}")
             
             # Calculate generation time
             generation_time_ms = int((time.time() - start_time) * 1000)
