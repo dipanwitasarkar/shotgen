@@ -65,6 +65,9 @@ const PROVIDERS: Provider[] = [
       { id: 'flux-schnell', name: 'Flux Schnell', description: 'NVIDIA NIM - Very fast, 4 steps' },
       { id: 'qwen-image', name: 'Qwen-Image', description: 'Advanced multilingual text rendering' },
       { id: 'qwen-image-2512', name: 'Qwen-Image 2512', description: 'Latest version (Dec 2025)' },
+      { id: 'qwen-image-edit', name: 'Qwen-Image-Edit', description: 'Image editing with text (uses uploaded image)' },
+      { id: 'qwen-image-edit-2509', name: 'Qwen-Image-Edit 2509', description: 'Edit with up to 3 images (Sep 2025)' },
+      { id: 'qwen-image-edit-2511', name: 'Qwen-Image-Edit 2511', description: 'Latest edit model (Dec 2025)' },
     ],
   },
   {

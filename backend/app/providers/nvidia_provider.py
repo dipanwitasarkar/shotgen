@@ -18,6 +18,9 @@ class NVIDIAProvider(AIProvider):
         "flux-schnell": "black-forest-labs/flux-schnell",
         "qwen-image": "qwen/qwen-image",
         "qwen-image-2512": "qwen/qwen-image-2512",
+        "qwen-image-edit": "qwen/qwen-image-edit",
+        "qwen-image-edit-2509": "qwen/qwen-image-edit-2509",
+        "qwen-image-edit-2511": "qwen/qwen-image-edit-2511",
     }
     
     def __init__(self, api_key: str):
@@ -72,9 +75,25 @@ class NVIDIAProvider(AIProvider):
         
         try:
             for _ in range(request.num_variations):
-                # Build endpoint based on model
-                # Convert model path like "qwen/qwen-image" to endpoint format
-                endpoint = f"/v1/genai/{model_path}"
+                # Build endpoint based on model type
+                # Edit models use different endpoint
+                if "edit" in model_key:
+                    # For edit models, we need the uploaded image
+                    # Note: This is a workaround - edit models need input image
+                    endpoint = f"/v1/genai/{model_path}"
+                    # Add image to payload if available
+                    if hasattr(request, 'input_image') and request.input_image:
+                        # Convert PIL image to base64
+                        import io
+                        import base64
+                        buffered = io.BytesIO()
+                        request.input_image.save(buffered, format="PNG")
+                        img_b64 = base64.b64encode(buffered.getvalue()).decode()
+                        payload["image"] = img_b64
+                else:
+                    # Generation models
+                    endpoint = f"/v1/genai/{model_path}"
+                
                 response = await self.client.post(
                     endpoint,
                     json=payload,
