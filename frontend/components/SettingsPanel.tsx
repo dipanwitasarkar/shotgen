@@ -77,31 +77,6 @@ const PROVIDERS: Provider[] = [
     ],
   },
   {
-    id: 'together',
-    name: 'Together AI',
-    description: 'Free tier available, fast inference',
-    apiKeyLabel: 'API Key',
-    keyUrl: 'https://api.together.ai/settings/api-keys',
-    models: [
-      { id: 'flux-schnell-free', name: 'FLUX.1 Schnell (Free)', description: 'Free tier - Fast, 4 steps' },
-      { id: 'flux-schnell', name: 'FLUX.1 Schnell', description: 'Fast, good quality' },
-      { id: 'flux-dev', name: 'FLUX.2 Dev', description: 'High quality, customizable' },
-      { id: 'flux-pro', name: 'FLUX.1.1 Pro', description: 'Best quality' },
-    ],
-  },
-  {
-    id: 'huggingface',
-    name: 'Hugging Face',
-    description: 'Free inference API, community models',
-    apiKeyLabel: 'Access Token',
-    keyUrl: 'https://huggingface.co/settings/tokens',
-    models: [
-      { id: 'flux-schnell', name: 'FLUX.1 Schnell', description: 'Free tier - Fast' },
-      { id: 'sdxl', name: 'Stable Diffusion XL', description: 'Free tier - High quality' },
-      { id: 'sd-turbo', name: 'SDXL Turbo', description: 'Free tier - Ultra fast' },
-    ],
-  },
-  {
     id: 'replicate',
     name: 'Replicate',
     description: 'Easy to use, pay-per-use pricing',
