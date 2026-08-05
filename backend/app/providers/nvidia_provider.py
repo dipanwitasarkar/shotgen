@@ -52,7 +52,7 @@ class NVIDIAProvider(AIProvider):
         prompt = self._build_prompt(request)
         
         # Get model endpoint - use runtime settings model if available
-        from app.providers.factory import get_runtime_settings
+        from app.api.routes import get_runtime_settings
         runtime = get_runtime_settings()
         model_key = runtime.get("model", "flux-schnell")
         model_path = self.MODELS.get(model_key, self.MODELS["flux-schnell"])
