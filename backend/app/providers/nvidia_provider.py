@@ -16,6 +16,10 @@ class NVIDIAProvider(AIProvider):
     
     MODELS = {
         "flux-schnell": "black-forest-labs/flux.1-schnell",
+        "flux-dev": "black-forest-labs/flux.1-dev",
+        "sd3-medium": "stabilityai/stable-diffusion-3-medium",
+        "sdxl": "stabilityai/stable-diffusion-xl",
+        "sdxl-turbo": "stabilityai/sdxl-turbo",
     }
     
     def __init__(self, api_key: str):
