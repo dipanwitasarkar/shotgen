@@ -55,33 +55,30 @@ class NVIDIAProvider(AIProvider):
         from app.api.routes import get_runtime_settings
         runtime = get_runtime_settings()
         model_key = runtime.get("model", "flux-schnell")
-        model_name = self.MODELS.get(model_key, self.MODELS["flux-schnell"])
+        model_path = self.MODELS.get(model_key, self.MODELS["flux-schnell"])
         
-        # NVIDIA uses OpenAI-compatible endpoints
-        # Generation: /v1/images/generations
-        # Editing: /v1/images/edits
+        # NVIDIA uses /v1/genai/{vendor}/{slug} format
+        # e.g., /v1/genai/black-forest-labs/flux.1-schnell
+        endpoint = f"/v1/genai/{model_path}"
         
-        is_edit_model = "edit" in model_key
-        endpoint = "/v1/images/edits" if is_edit_model else "/v1/images/generations"
-        
-        # OpenAI-compatible payload
+        # NVIDIA native payload format
         payload = {
-            "model": model_name,
             "prompt": prompt,
-            "n": 1,  # NVIDIA only supports 1 sample at a time
-            "size": f"{request.output_width}x{request.output_height}",
+            "width": request.output_width,
+            "height": request.output_height,
         }
         
         if request.seed is not None:
             payload["seed"] = request.seed
         
         # For edit models, add the uploaded image
+        is_edit_model = "edit" in model_key
         if is_edit_model and hasattr(request, 'input_image') and request.input_image:
             # Convert PIL image to base64
             buffered = io.BytesIO()
             request.input_image.save(buffered, format="PNG")
             img_b64 = base64.b64encode(buffered.getvalue()).decode()
-            payload["image"] = f"data:image/png;base64,{img_b64}"
+            payload["image"] = img_b64
         
         # Call NVIDIA API (generate multiple images sequentially if needed)
         images = []
@@ -96,19 +93,20 @@ class NVIDIAProvider(AIProvider):
                 response.raise_for_status()
                 result = response.json()
                 
-                # OpenAI-compatible response format
-                # {"data": [{"b64_json": "...", "revised_prompt": "..."}]}
-                if "data" in result and len(result["data"]) > 0:
-                    img_data = result["data"][0]
-                    if "b64_json" in img_data:
-                        img_b64 = img_data["b64_json"]
-                        img_bytes = base64.b64decode(img_b64)
-                        img = Image.open(io.BytesIO(img_bytes))
-                        images.append(img)
-                        seeds.append(request.seed or 0)
-                    elif "url" in img_data:
-                        # Some models return URL instead
-                        raise Exception("URL response not supported yet")
+                # NVIDIA native response format
+                # {"image": "base64_string"} or {"images": ["base64_string"]}
+                if "image" in result:
+                    img_b64 = result["image"]
+                    img_bytes = base64.b64decode(img_b64)
+                    img = Image.open(io.BytesIO(img_bytes))
+                    images.append(img)
+                    seeds.append(result.get("seed", request.seed or 0))
+                elif "images" in result and len(result["images"]) > 0:
+                    img_b64 = result["images"][0]
+                    img_bytes = base64.b64decode(img_b64)
+                    img = Image.open(io.BytesIO(img_bytes))
+                    images.append(img)
+                    seeds.append(result.get("seed", request.seed or 0))
                 else:
                     raise Exception(f"Unexpected response format: {result}")
             
