@@ -120,8 +120,13 @@ class NVIDIAProvider(AIProvider):
             )
             
         except httpx.HTTPStatusError as e:
-            raise Exception(f"NVIDIA API error: {e.response.status_code} - {e.response.text}")
+            error_detail = e.response.text
+            print(f"[NVIDIA] HTTP Error: {e.response.status_code} - {error_detail}")
+            raise Exception(f"NVIDIA API error: {e.response.status_code} - {error_detail}")
         except Exception as e:
+            print(f"[NVIDIA] Exception: {str(e)}")
+            import traceback
+            traceback.print_exc()
             raise Exception(f"NVIDIA generation failed: {str(e)}")
     
     def _build_prompt(self, request: GenerationRequest) -> str:
