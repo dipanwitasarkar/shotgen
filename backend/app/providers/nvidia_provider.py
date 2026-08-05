@@ -17,6 +17,7 @@ class NVIDIAProvider(AIProvider):
     MODELS = {
         "flux-schnell": "black-forest-labs/flux.1-schnell",
         "flux-dev": "black-forest-labs/flux.1-dev",
+        "sd3.5-large": "stabilityai/stable-diffusion-3.5-large",
         "sd3-medium": "stabilityai/stable-diffusion-3-medium",
         "sdxl": "stabilityai/stable-diffusion-xl",
         "sdxl-turbo": "stabilityai/sdxl-turbo",

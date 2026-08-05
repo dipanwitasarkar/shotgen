@@ -64,6 +64,7 @@ const PROVIDERS: Provider[] = [
     models: [
       { id: 'flux-schnell', name: 'FLUX.1 Schnell', description: 'Very fast, 4 steps' },
       { id: 'flux-dev', name: 'FLUX.1 Dev', description: 'High quality, 20-50 steps' },
+      { id: 'sd3.5-large', name: 'Stable Diffusion 3.5 Large', description: '8B params, highest quality' },
       { id: 'sd3-medium', name: 'Stable Diffusion 3 Medium', description: 'High quality, balanced' },
       { id: 'sdxl', name: 'Stable Diffusion XL', description: 'Classic, high quality' },
       { id: 'sdxl-turbo', name: 'SDXL Turbo', description: 'Fast, 1-4 steps' },
