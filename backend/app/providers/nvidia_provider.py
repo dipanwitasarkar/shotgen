@@ -15,12 +15,7 @@ class NVIDIAProvider(AIProvider):
     """NVIDIA NIM API provider using Flux and Qwen-Image models."""
     
     MODELS = {
-        "flux-schnell": "black-forest-labs/flux-schnell",
-        "qwen-image": "qwen/qwen-image",
-        "qwen-image-2512": "qwen/qwen-image-2512",
-        "qwen-image-edit": "qwen/qwen-image-edit",
-        "qwen-image-edit-2509": "qwen/qwen-image-edit-2509",
-        "qwen-image-edit-2511": "qwen/qwen-image-edit-2511",
+        "flux-schnell": "black-forest-labs/flux.1-schnell",
     }
     
     def __init__(self, api_key: str):
@@ -86,23 +81,25 @@ class NVIDIAProvider(AIProvider):
         
         try:
             for _ in range(request.num_variations):
+                print(f"[NVIDIA] Endpoint: {endpoint}")
+                print(f"[NVIDIA] Payload: {payload}")
+                
                 response = await self.client.post(
                     endpoint,
                     json=payload,
                 )
+                
+                print(f"[NVIDIA] Status: {response.status_code}")
+                if response.status_code != 200:
+                    print(f"[NVIDIA] Error: {response.text}")
+                
                 response.raise_for_status()
                 result = response.json()
                 
-                # NVIDIA native response format
-                # {"image": "base64_string"} or {"images": ["base64_string"]}
-                if "image" in result:
-                    img_b64 = result["image"]
-                    img_bytes = base64.b64decode(img_b64)
-                    img = Image.open(io.BytesIO(img_bytes))
-                    images.append(img)
-                    seeds.append(result.get("seed", request.seed or 0))
-                elif "images" in result and len(result["images"]) > 0:
-                    img_b64 = result["images"][0]
+                # NVIDIA FLUX response format
+                # {"artifacts": [{"base64": "...", "finishReason": "SUCCESS"}]}
+                if "artifacts" in result and len(result["artifacts"]) > 0:
+                    img_b64 = result["artifacts"][0]["base64"]
                     img_bytes = base64.b64decode(img_b64)
                     img = Image.open(io.BytesIO(img_bytes))
                     images.append(img)
