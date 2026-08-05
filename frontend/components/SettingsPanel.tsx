@@ -31,6 +31,21 @@ interface Model {
 
 const PROVIDERS: Provider[] = [
   {
+    id: 'placeholdr',
+    name: 'Placeholdr.dev ⭐ FREE',
+    description: 'Completely free, no signup needed!',
+    apiKeyLabel: 'No API Key Needed',
+    keyUrl: '',
+    models: [
+      { id: 'photographic', name: 'Photographic', description: 'FREE - Realistic photos' },
+      { id: 'artistic', name: 'Artistic', description: 'FREE - Artistic style' },
+      { id: 'anime', name: 'Anime', description: 'FREE - Anime/manga' },
+      { id: 'oil-painting', name: 'Oil Painting', description: 'FREE - Oil painting' },
+      { id: '3d-render', name: '3D Render', description: 'FREE - 3D rendered' },
+      { id: 'cartoon', name: 'Cartoon', description: 'FREE - Cartoon style' },
+    ],
+  },
+  {
     id: 'pollinations',
     name: 'Pollinations.ai',
     description: 'Free with signup, get API key',
@@ -157,12 +172,13 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
   }
 
   const handleSave = async () => {
-    if (!apiKey.trim()) {
+    // Placeholdr doesn't need API key
+    if (provider !== 'placeholdr' && !apiKey.trim()) {
       setError('API key is required')
       return
     }
 
-    const settings: AppSettings = { provider, model, apiKey }
+    const settings: AppSettings = { provider, model, apiKey: apiKey || 'no-key-needed' }
     
     // Save to localStorage
     localStorage.setItem('shotgen-settings', JSON.stringify(settings))
@@ -278,8 +294,9 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
             </div>
           </div>
 
-          {/* API Key Input */}
-          <div className="space-y-3">
+          {/* API Key Input - Hide for Placeholdr */}
+          {provider !== 'placeholdr' && (
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
                   <Key className="w-4 h-4" />
@@ -320,16 +337,17 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
                 </p>
               )}
             </div>
+          )}
 
           {/* Save Button */}
           <button
             onClick={handleSave}
-            disabled={!apiKey.trim()}
+            disabled={provider !== 'placeholdr' && !apiKey.trim()}
             className={cn(
               'w-full py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2',
               saved
                 ? 'bg-green-500 text-white'
-                : apiKey.trim()
+                : (provider === 'placeholdr' || apiKey.trim())
                   ? 'bg-brand-500 hover:bg-brand-600 text-white'
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed'
             )}

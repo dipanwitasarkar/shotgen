@@ -283,6 +283,14 @@ async def get_available_models():
     """Get available models for each provider."""
     return ModelsResponse(
         models={
+            "placeholdr": [
+                {"id": "photographic", "name": "Photographic", "description": "FREE - Realistic photos, no signup"},
+                {"id": "artistic", "name": "Artistic", "description": "FREE - Artistic style"},
+                {"id": "anime", "name": "Anime", "description": "FREE - Anime/manga style"},
+                {"id": "oil-painting", "name": "Oil Painting", "description": "FREE - Oil painting style"},
+                {"id": "3d-render", "name": "3D Render", "description": "FREE - 3D rendered look"},
+                {"id": "cartoon", "name": "Cartoon", "description": "FREE - Cartoon style"},
+            ],
             "pollinations": [
                 {"id": "flux", "name": "FLUX", "description": "FREE - Versatile, no API key needed"},
                 {"id": "flux-realism", "name": "FLUX Realism", "description": "FREE - Photorealistic"},
