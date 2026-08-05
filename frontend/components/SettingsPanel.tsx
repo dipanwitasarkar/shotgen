@@ -31,31 +31,28 @@ interface Model {
 
 const PROVIDERS: Provider[] = [
   {
-    id: 'placeholdr',
-    name: 'Placeholdr.dev ⭐ FREE',
-    description: 'Completely free, no signup needed!',
-    apiKeyLabel: 'No API Key Needed',
-    keyUrl: '',
+    id: 'together',
+    name: 'Together AI ⭐ FREE',
+    description: 'Free 3 months unlimited, fast inference',
+    apiKeyLabel: 'API Key',
+    keyUrl: 'https://api.together.ai/settings/api-keys',
     models: [
-      { id: 'photographic', name: 'Photographic', description: 'FREE - Realistic photos' },
-      { id: 'artistic', name: 'Artistic', description: 'FREE - Artistic style' },
-      { id: 'anime', name: 'Anime', description: 'FREE - Anime/manga' },
-      { id: 'oil-painting', name: 'Oil Painting', description: 'FREE - Oil painting' },
-      { id: '3d-render', name: '3D Render', description: 'FREE - 3D rendered' },
-      { id: 'cartoon', name: 'Cartoon', description: 'FREE - Cartoon style' },
+      { id: 'flux-schnell-free', name: 'FLUX.1 Schnell (Free)', description: '⭐ FREE - 3 months unlimited' },
+      { id: 'flux-schnell', name: 'FLUX.1 Schnell', description: 'Fast, good quality' },
+      { id: 'flux-dev', name: 'FLUX.2 Dev', description: 'High quality' },
+      { id: 'flux-pro', name: 'FLUX.1.1 Pro', description: 'Best quality' },
     ],
   },
   {
-    id: 'pollinations',
-    name: 'Pollinations.ai',
-    description: 'Free with signup, get API key',
-    apiKeyLabel: 'API Key',
-    keyUrl: 'https://pollinations.ai',
+    id: 'huggingface',
+    name: 'Hugging Face ⭐ FREE',
+    description: 'Free forever, all models free',
+    apiKeyLabel: 'API Token',
+    keyUrl: 'https://huggingface.co/settings/tokens',
     models: [
-      { id: 'flux', name: 'FLUX', description: 'Free with API key' },
-      { id: 'flux-realism', name: 'FLUX Realism', description: 'Photorealistic' },
-      { id: 'flux-anime', name: 'FLUX Anime', description: 'Illustration style' },
-      { id: 'turbo', name: 'Turbo', description: 'Fastest' },
+      { id: 'flux-schnell', name: 'FLUX.1 Schnell', description: 'Free - Fast' },
+      { id: 'sdxl', name: 'Stable Diffusion XL', description: 'Free - High quality' },
+      { id: 'sd-turbo', name: 'SDXL Turbo', description: 'Free - Ultra fast' },
     ],
   },
   {
@@ -172,13 +169,12 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
   }
 
   const handleSave = async () => {
-    // Placeholdr doesn't need API key
-    if (provider !== 'placeholdr' && !apiKey.trim()) {
+    if (!apiKey.trim()) {
       setError('API key is required')
       return
     }
 
-    const settings: AppSettings = { provider, model, apiKey: apiKey || 'no-key-needed' }
+    const settings: AppSettings = { provider, model, apiKey }
     
     // Save to localStorage
     localStorage.setItem('shotgen-settings', JSON.stringify(settings))
@@ -294,9 +290,8 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
             </div>
           </div>
 
-          {/* API Key Input - Hide for Placeholdr */}
-          {provider !== 'placeholdr' && (
-            <div className="space-y-3">
+          {/* API Key Input */}
+          <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
                   <Key className="w-4 h-4" />
@@ -337,17 +332,16 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
                 </p>
               )}
             </div>
-          )}
 
           {/* Save Button */}
           <button
             onClick={handleSave}
-            disabled={provider !== 'placeholdr' && !apiKey.trim()}
+            disabled={!apiKey.trim()}
             className={cn(
               'w-full py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2',
               saved
                 ? 'bg-green-500 text-white'
-                : (provider === 'placeholdr' || apiKey.trim())
+                : apiKey.trim()
                   ? 'bg-brand-500 hover:bg-brand-600 text-white'
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed'
             )}

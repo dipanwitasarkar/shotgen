@@ -283,29 +283,8 @@ async def get_available_models():
     """Get available models for each provider."""
     return ModelsResponse(
         models={
-            "placeholdr": [
-                {"id": "photographic", "name": "Photographic", "description": "FREE - Realistic photos, no signup"},
-                {"id": "artistic", "name": "Artistic", "description": "FREE - Artistic style"},
-                {"id": "anime", "name": "Anime", "description": "FREE - Anime/manga style"},
-                {"id": "oil-painting", "name": "Oil Painting", "description": "FREE - Oil painting style"},
-                {"id": "3d-render", "name": "3D Render", "description": "FREE - 3D rendered look"},
-                {"id": "cartoon", "name": "Cartoon", "description": "FREE - Cartoon style"},
-            ],
-            "pollinations": [
-                {"id": "flux", "name": "FLUX", "description": "FREE - Versatile, no API key needed"},
-                {"id": "flux-realism", "name": "FLUX Realism", "description": "FREE - Photorealistic"},
-                {"id": "flux-anime", "name": "FLUX Anime", "description": "FREE - Illustration style"},
-                {"id": "turbo", "name": "Turbo", "description": "FREE - Fastest generation"},
-            ],
-            "nvidia": [
-                {"id": "flux-schnell", "name": "Flux Schnell", "description": "NVIDIA NIM - Very fast, 4 steps"},
-            ],
-            "google": [
-                {"id": "imagen-3-fast", "name": "Imagen 3 Fast", "description": "Google - Fast, $0.03/image"},
-                {"id": "imagen-3", "name": "Imagen 3", "description": "Google - Highest quality, $0.03/image"},
-            ],
             "together": [
-                {"id": "flux-schnell-free", "name": "FLUX.1 Schnell (Free)", "description": "Free tier - Fast, 4 steps"},
+                {"id": "flux-schnell-free", "name": "FLUX.1 Schnell (Free)", "description": "⭐ FREE - 3 months unlimited"},
                 {"id": "flux-schnell", "name": "FLUX.1 Schnell", "description": "Fast, good quality"},
                 {"id": "flux-dev", "name": "FLUX.2 Dev", "description": "High quality, customizable"},
                 {"id": "flux-pro", "name": "FLUX.1.1 Pro", "description": "Best quality"},
