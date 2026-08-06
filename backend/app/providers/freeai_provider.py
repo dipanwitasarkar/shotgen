@@ -66,9 +66,9 @@ class FreeAIProvider(AIProvider):
                 data = {
                     "prompt": prompt,
                     "model": "sdxl",
-                    "strength": 0.85,  # Higher = more transformation (0-1)
-                    "guidance_scale": 7.5,  # How closely to follow prompt
-                    "num_inference_steps": 30,  # More steps = better quality
+                    "strength": request.strength,  # From UI slider
+                    "guidance_scale": request.guidance_scale,  # From UI slider
+                    "num_inference_steps": request.inference_steps,  # From UI slider
                 }
                 
                 if seed:

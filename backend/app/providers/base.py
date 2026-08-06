@@ -19,6 +19,9 @@ class GenerationRequest:
     output_height: int = 1024
     num_variations: int = 1
     seed: int | None = None
+    strength: float = 0.85  # IMG2IMG transformation strength (0-1)
+    guidance_scale: float = 7.5  # How closely to follow prompt (1-20)
+    inference_steps: int = 30  # Quality steps (10-50)
 
 
 @dataclass

@@ -115,6 +115,9 @@ async def generate_product_shot(
     variations: Annotated[int, Form(description="Number of variations", ge=1, le=4)] = 1,
     remove_background: Annotated[bool, Form(description="Remove background first")] = True,
     seed: Annotated[int | None, Form(description="Random seed for reproducibility")] = None,
+    strength: Annotated[float, Form(description="IMG2IMG transformation strength", ge=0.0, le=1.0)] = 0.85,
+    guidanceScale: Annotated[float, Form(description="Prompt guidance scale", ge=1.0, le=20.0)] = 7.5,
+    inferenceSteps: Annotated[int, Form(description="Number of inference steps", ge=10, le=50)] = 30,
     service: ImageGenerationService = Depends(get_image_generation_service),
 ):
     """
@@ -137,6 +140,9 @@ async def generate_product_shot(
         variations=variations,
         remove_background=remove_background,
         seed=seed,
+        strength=strength,
+        guidance_scale=guidanceScale,
+        inference_steps=inferenceSteps,
     )
     
     # Generate

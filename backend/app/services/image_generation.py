@@ -24,6 +24,9 @@ class ProductShotRequest:
     variations: int = 1
     remove_background: bool = True
     seed: int | None = None
+    strength: float = 0.85
+    guidance_scale: float = 7.5
+    inference_steps: int = 30
 
 
 @dataclass
@@ -138,6 +141,9 @@ class ImageGenerationService:
             output_height=request.height,
             num_variations=request.variations,
             seed=request.seed,
+            strength=request.strength,
+            guidance_scale=request.guidance_scale,
+            inference_steps=request.inference_steps,
         )
         
         result = await self.ai_provider.generate(gen_request)

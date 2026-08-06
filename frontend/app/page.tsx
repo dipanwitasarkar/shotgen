@@ -64,6 +64,9 @@ export default function Home() {
         height: dimensions.height,
         variations,
         removeBackground: true,
+        strength,
+        guidanceScale,
+        inferenceSteps,
       })
       setResult(generationResult)
     } catch (err) {
