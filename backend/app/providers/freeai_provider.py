@@ -146,8 +146,8 @@ class FreeAIProvider(AIProvider):
             raise
     
     def _build_prompt(self, request: GenerationRequest) -> str:
-        """Build prompt for Free.ai img2img."""
-        return build_img2img_prompt(request)
+        """Build prompt for Free.ai - uses background prompt for composite approach."""
+        return build_background_prompt(request)
     
     def estimate_cost(self, request: GenerationRequest) -> float:
         """Completely FREE! 6000 tokens/day anonymous, 30000/day with free account."""
