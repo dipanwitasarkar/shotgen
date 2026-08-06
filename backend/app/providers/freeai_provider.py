@@ -87,6 +87,8 @@ class FreeAIProvider(AIProvider):
                     raise Exception(f"Free.ai API error: {error_text}")
                 
                 result = response.json()
+                print(f"[Free.ai] Response keys: {result.keys()}")
+                print(f"[Free.ai] Full response: {str(result)[:500]}")
                 
                 # Get image from response
                 if "data" in result and len(result["data"]) > 0:
