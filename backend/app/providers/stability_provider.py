@@ -24,10 +24,8 @@ class StabilityProvider(AIProvider):
         "sd-1.6": "stable-diffusion-v1-6",
     }
     
-    def __init__(self):
-        if not settings.stability_api_key:
-            raise ValueError("STABILITY_API_KEY is required")
-        self.api_key = settings.stability_api_key
+    def __init__(self, api_key: str):
+        self.api_key = api_key
         self.default_model = "sd3-turbo"
     
     @property
@@ -39,7 +37,7 @@ class StabilityProvider(AIProvider):
         return list(self.MODELS.keys())
     
     async def generate(self, request: GenerationRequest) -> GenerationResult:
-        """Generate product photos using Stability AI."""
+        """Generate product photos using Stability AI IMAGE-TO-IMAGE."""
         start_time = time.time()
         
         prompt = self._build_prompt(request)
@@ -47,10 +45,16 @@ class StabilityProvider(AIProvider):
         images = []
         seeds = []
         
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=120.0) as client:
             for i in range(request.num_variations):
                 seed = request.seed + i if request.seed else 0
                 
+                # Convert product image to bytes for upload
+                img_byte_arr = io.BytesIO()
+                request.product_image.save(img_byte_arr, format='PNG')
+                img_byte_arr.seek(0)
+                
+                # Use IMAGE-TO-IMAGE endpoint with product as input
                 response = await client.post(
                     f"{self.API_BASE}/v2beta/stable-image/generate/sd3",
                     headers={
@@ -58,16 +62,21 @@ class StabilityProvider(AIProvider):
                         "Accept": "image/*",
                     },
                     files={
-                        "none": "",
+                        "image": ("product.png", img_byte_arr, "image/png"),
                     },
                     data={
                         "prompt": prompt,
                         "model": self.MODELS[self.default_model],
+                        "mode": "image-to-image",  # IMAGE-TO-IMAGE mode
                         "output_format": "png",
-                        "aspect_ratio": self._get_aspect_ratio(request),
+                        "strength": 0.5,  # How much to transform (0.0-1.0)
                         "seed": seed,
                     },
                 )
+                
+                print(f"[Stability] Status: {response.status_code}")
+                if response.status_code != 200:
+                    print(f"[Stability] Error: {response.text}")
                 
                 if response.status_code == 200:
                     image = Image.open(io.BytesIO(response.content))

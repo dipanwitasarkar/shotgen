@@ -132,13 +132,17 @@ class PollinationsProvider(AIProvider):
     
     def _build_prompt(self, request: GenerationRequest) -> str:
         """Build prompt for Pollinations.ai."""
+        # For text-to-image, we need to describe the product in the prompt
+        # Since we can't use the actual product image, we describe it generically
         parts = [
+            "product",  # Generic product placeholder
             request.scene_prompt,
             f"{request.style} style",
             f"{request.lighting} lighting",
             f"{request.angle} angle view",
             "professional product photography",
             "high quality",
+            "centered composition",
         ]
         return ", ".join(parts)
     
