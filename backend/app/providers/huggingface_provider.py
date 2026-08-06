@@ -45,15 +45,23 @@ class HuggingFaceProvider(AIProvider):
         # Build prompt
         prompt = self._build_prompt(request)
         
+        # Convert product image to base64
+        img_byte_arr = io.BytesIO()
+        request.product_image.save(img_byte_arr, format='PNG')
+        img_b64 = base64.b64encode(img_byte_arr.getvalue()).decode()
+        
         # Get model
         model_id = self.MODELS.get("flux-schnell", self.MODELS["flux-schnell"])
         
         # Hugging Face Inference API endpoint
         endpoint = f"{self.base_url}/models/{model_id}"
         
-        # Prepare payload
+        # Prepare payload with image for img2img
         payload = {
-            "inputs": prompt,
+            "inputs": {
+                "prompt": prompt,
+                "image": f"data:image/png;base64,{img_b64}",  # Product image
+            },
             "parameters": {
                 "width": request.output_width,
                 "height": request.output_height,
@@ -65,6 +73,8 @@ class HuggingFaceProvider(AIProvider):
         
         if request.seed:
             payload["parameters"]["seed"] = request.seed
+        
+        print(f"[HuggingFace] IMG2IMG - Image sent: YES, Strength: {request.strength}")
         
         try:
             # Generate images (one at a time for HF)

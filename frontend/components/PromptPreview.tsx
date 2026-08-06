@@ -63,6 +63,11 @@ export function PromptPreview({
     if (onCustomPromptChange) {
       onCustomPromptChange(editedPrompt)
     }
+    // Update the displayed prompt immediately
+    setPromptData({
+      ...promptData,
+      full_prompt: editedPrompt
+    })
     setIsEditing(false)
   }
 

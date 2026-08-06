@@ -41,17 +41,27 @@ class GoogleProvider(AIProvider):
         # Build prompt
         prompt = self._build_prompt(request)
         
+        # Convert product image to base64
+        img_byte_arr = io.BytesIO()
+        request.product_image.save(img_byte_arr, format='PNG')
+        img_b64 = base64.b64encode(img_byte_arr.getvalue()).decode()
+        
         # Get model
         model_id = self.MODELS.get("imagen-3-fast", self.MODELS["imagen-3-fast"])
         
-        # Google Imagen API payload
+        # Google Imagen API payload with reference image
         payload = {
             "prompt": prompt,
+            "reference_image": {
+                "image_bytes": img_b64,
+            },
             "number_of_images": request.num_variations,
             "aspect_ratio": "1:1",  # Can be customized
             "safety_filter_level": "block_some",
             "person_generation": "allow_adult",
         }
+        
+        print(f"[Google Imagen] IMG2IMG - Image sent: YES")
         
         # Call Google Imagen API
         try:
