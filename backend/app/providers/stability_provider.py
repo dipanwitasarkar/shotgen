@@ -9,7 +9,7 @@ from PIL import Image
 import httpx
 
 from app.core.config import settings
-from app.providers.base import AIProvider, GenerationRequest, GenerationResult, build_img2img_prompt, build_background_prompt, composite_product_on_background
+from app.providers.base import AIProvider, GenerationRequest, GenerationResult, build_img2img_prompt
 
 
 class StabilityProvider(AIProvider):

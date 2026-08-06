@@ -110,9 +110,9 @@ def build_img2img_prompt(request: GenerationRequest) -> str:
     Build a detailed, effective prompt for image-to-image generation.
     Works for all AI models (SDXL, FLUX, SD3, etc.)
     """
-    # Start with the main scene
+    # Start with the main scene - IMPORTANT: tell AI to keep the product
     prompt_parts = [
-        f"product photography of the object in {request.scene_prompt}",
+        f"product photography, keep the product intact and visible, place product in {request.scene_prompt}",
     ]
     
     # Add style details
@@ -157,14 +157,23 @@ def build_img2img_prompt(request: GenerationRequest) -> str:
     else:
         prompt_parts.append(f"{request.angle} angle")
     
-    # Add quality boosters
+    # Add quality boosters and product preservation instructions
     prompt_parts.append("sharp focus, high resolution, professional quality")
     prompt_parts.append("8k uhd, detailed textures")
+    prompt_parts.append("preserve product appearance, do not alter the product itself")
     
     # Join all parts
     full_prompt = ", ".join(prompt_parts)
     
     return full_prompt
+
+
+def build_negative_prompt() -> str:
+    """
+    Build negative prompt to prevent AI from altering the product.
+    Use this with providers that support negative prompts.
+    """
+    return "deformed product, distorted product, altered product, different product, product transformation, product mutation, blurry product, low quality product"
 
 
 class AIProvider(ABC):
