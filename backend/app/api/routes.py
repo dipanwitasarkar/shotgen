@@ -321,11 +321,16 @@ async def get_available_models():
     """Get available models for each provider."""
     return ModelsResponse(
         models={
+            "freeai": [
+                {"id": "sdxl", "name": "SDXL", "description": "⭐ FREE IMG2IMG - Your product in scenes!"},
+                {"id": "flux-schnell", "name": "FLUX Schnell", "description": "⭐ FREE IMG2IMG - Fast"},
+                {"id": "sd-turbo", "name": "SD Turbo", "description": "⭐ FREE IMG2IMG - Fastest"},
+            ],
             "pollinations": [
-                {"id": "flux", "name": "FLUX", "description": "⭐ FREE - No key needed"},
-                {"id": "flux-realism", "name": "FLUX Realism", "description": "⭐ FREE - Photorealistic"},
-                {"id": "flux-anime", "name": "FLUX Anime", "description": "⭐ FREE - Illustration"},
-                {"id": "turbo", "name": "Turbo", "description": "⭐ FREE - Fastest"},
+                {"id": "flux", "name": "FLUX", "description": "Text-to-image only"},
+                {"id": "flux-realism", "name": "FLUX Realism", "description": "Text-to-image only"},
+                {"id": "flux-anime", "name": "FLUX Anime", "description": "Text-to-image only"},
+                {"id": "turbo", "name": "Turbo", "description": "Text-to-image only"},
             ],
             "nvidia": [
                 {"id": "flux-schnell", "name": "FLUX.1 Schnell", "description": "Very fast, 4 steps"},
