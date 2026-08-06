@@ -84,26 +84,38 @@ npm run dev
 1. Open http://localhost:3000
 2. Click the Settings panel (⚙️)
 3. Choose your AI provider:
-   - **Free.ai** ⭐ FREE (signup required) - Best for testing
-   - **Together AI** - Free trial available
-   - **Hugging Face** - Free forever
-   - **Stability AI** - Pay per image
-   - **Replicate** - Pay per use
-   - **NVIDIA NIM** - Enterprise
-   - **Google Imagen** - Pay per image
+   - **Stability AI** ⭐ **RECOMMENDED** - Best for product photography (Inpainting + ControlNet)
+   - **Replicate** - Good alternative (Inpainting + ControlNet support)
+   - **Together AI** - Free trial available (IMG2IMG support)
+   - **Hugging Face** - Free forever (IMG2IMG support)
+   - **NVIDIA NIM** - Enterprise (IMG2IMG support)
+   - **Google Imagen** - Pay per image (IMG2IMG support)
+   - **Free.ai** ⚠️ **NOT RECOMMENDED** - Text-to-image only, does NOT preserve product
 4. Select a model (SDXL, FLUX, SD3, etc.)
 5. Paste your API key
 6. Click Save
 
+> **⚠️ Important:** Free.ai does NOT support image-to-image generation. It will ignore your product image and generate from text only. For proper product photography, use **Stability AI** (recommended) or any other provider.
+
 ### Get API Keys
 
-- **Free.ai** ⭐ (FREE with signup): https://free.ai
-- **Together AI** (Free trial): https://api.together.ai/settings/api-keys
-- **Hugging Face** (Free forever): https://huggingface.co/settings/tokens
-- **Stability AI** (Paid): https://platform.stability.ai/account/keys
+- **Stability AI** ⭐ **RECOMMENDED** (Paid): https://platform.stability.ai/account/keys
+  - Best for product photography
+  - Inpainting mode (preserves product)
+  - ControlNet support (structure preservation)
+  - ~$0.05 per image
 - **Replicate** (Paid): https://replicate.com/account/api-tokens
+  - Good alternative with Inpainting + ControlNet
+- **Together AI** (Free trial): https://api.together.ai/settings/api-keys
+  - Free trial available, IMG2IMG support
+- **Hugging Face** (Free forever): https://huggingface.co/settings/tokens
+  - Free forever, IMG2IMG support
 - **NVIDIA NIM** (Paid): https://build.nvidia.com/explore/discover
+  - Enterprise, IMG2IMG support
 - **Google Imagen** (Paid): https://aistudio.google.com/app/apikey
+  - IMG2IMG support
+- **Free.ai** ⚠️ **NOT RECOMMENDED** (FREE with signup): https://free.ai
+  - Text-to-image only, does NOT preserve product
 
 ## Usage
 

@@ -31,27 +31,27 @@ interface Model {
 
 const PROVIDERS: Provider[] = [
   {
-    id: 'freeai',
-    name: 'Free.ai ⭐ FREE (Signup Required)',
-    description: 'Free tier available - Just signup, no credit card',
-    apiKeyLabel: 'API Key (Sign up free at free.ai)',
-    keyUrl: 'https://free.ai',
-    models: [
-      { id: 'sdxl', name: 'SDXL', description: '⭐ FREE IMG2IMG - Best option' },
-      { id: 'flux-schnell', name: 'FLUX Schnell', description: '⭐ FREE IMG2IMG - Fast' },
-      { id: 'sd-turbo', name: 'SD Turbo', description: '⭐ FREE IMG2IMG - Fastest' },
-    ],
-  },
-  {
     id: 'stability',
-    name: 'Stability AI (Paid)',
-    description: 'Pay per image - Requires credit card',
+    name: 'Stability AI ⭐ RECOMMENDED',
+    description: '✅ Best for product photography - Inpainting & ControlNet support',
     apiKeyLabel: 'API Key',
     keyUrl: 'https://platform.stability.ai/account/keys',
     models: [
-      { id: 'sd3-turbo', name: 'SD3 Turbo', description: 'IMG2IMG - Fastest' },
-      { id: 'sd3', name: 'SD3', description: 'IMG2IMG - High quality' },
-      { id: 'sdxl', name: 'SDXL 1.0', description: 'IMG2IMG - Classic' },
+      { id: 'sd3-turbo', name: 'SD3 Turbo', description: '✅ INPAINTING + CONTROLNET - Fastest' },
+      { id: 'sd3', name: 'SD3', description: '✅ INPAINTING + CONTROLNET - Best quality' },
+      { id: 'sdxl', name: 'SDXL 1.0', description: '✅ INPAINTING + CONTROLNET - Classic' },
+    ],
+  },
+  {
+    id: 'freeai',
+    name: 'Free.ai ⚠️ NOT RECOMMENDED',
+    description: '⚠️ WARNING: Text-to-image only, does NOT preserve product',
+    apiKeyLabel: 'API Key (Sign up free at free.ai)',
+    keyUrl: 'https://free.ai',
+    models: [
+      { id: 'sdxl', name: 'SDXL', description: '⚠️ TEXT-TO-IMAGE ONLY - Product not preserved' },
+      { id: 'flux-schnell', name: 'FLUX Schnell', description: '⚠️ TEXT-TO-IMAGE ONLY - Product not preserved' },
+      { id: 'sd-turbo', name: 'SD Turbo', description: '⚠️ TEXT-TO-IMAGE ONLY - Product not preserved' },
     ],
   },
   {
@@ -257,6 +257,53 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
               ))}
             </div>
           </div>
+
+          {/* Warning for Free.ai */}
+          {provider === 'freeai' && (
+            <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <div className="font-semibold text-red-900 mb-1">
+                    ⚠️ Free.ai Does NOT Support Product Photography
+                  </div>
+                  <div className="text-sm text-red-800 space-y-1">
+                    <p>Free.ai only supports <strong>text-to-image</strong> generation. It will <strong>ignore your product image</strong> and generate from text only.</p>
+                    <p className="font-semibold mt-2">✅ Recommended: Use Stability AI instead</p>
+                    <ul className="list-disc ml-5 mt-1 space-y-0.5">
+                      <li>Preserves your product exactly (Inpainting mode)</li>
+                      <li>Changes only the background</li>
+                      <li>Professional results</li>
+                      <li>ControlNet support for structure preservation</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Recommendation for Stability AI */}
+          {provider === 'stability' && (
+            <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <div className="font-semibold text-green-900 mb-1">
+                    ✅ Best Choice for Product Photography
+                  </div>
+                  <div className="text-sm text-green-800">
+                    <p>Stability AI offers the best quality for product photography:</p>
+                    <ul className="list-disc ml-5 mt-1 space-y-0.5">
+                      <li><strong>Inpainting mode</strong> - Preserves product exactly</li>
+                      <li><strong>ControlNet support</strong> - Maintains product structure</li>
+                      <li><strong>High resolution</strong> - Up to 4K output</li>
+                      <li><strong>Fast generation</strong> - 5-15 seconds</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Model Selection */}
           <div className="space-y-3">
