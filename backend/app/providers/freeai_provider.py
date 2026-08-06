@@ -77,7 +77,7 @@ class FreeAIProvider(AIProvider):
                 print(f"  Strength: {payload['strength']}")
                 
                 response = await self.client.post(
-                    f"{self.base_url}/images/generations",  # Standard img2img endpoint
+                    f"{self.base_url}/image/generate/",  # Correct Free.ai endpoint
                     json=payload
                 )
                 
