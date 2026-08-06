@@ -66,12 +66,18 @@ export function GenerationSettings({
   aspectRatio,
   quality,
   variations,
+  strength,
+  guidanceScale,
+  inferenceSteps,
   onStyleChange,
   onLightingChange,
   onAngleChange,
   onAspectRatioChange,
   onQualityChange,
   onVariationsChange,
+  onStrengthChange,
+  onGuidanceScaleChange,
+  onInferenceStepsChange,
 }: GenerationSettingsProps) {
   return (
     <div className="space-y-6">
