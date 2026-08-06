@@ -57,9 +57,6 @@ class PollinationsProvider(AIProvider):
         seeds = []
         
         try:
-            # First, upload product image to get a URL (required for img2img)
-            product_url = await self._upload_product_image(request.product_image)
-            
             for i in range(request.num_variations):
                 # Use different seeds for variations
                 # Pollinations max seed is 2147483647 (32-bit signed int max)
@@ -72,7 +69,7 @@ class PollinationsProvider(AIProvider):
                 import urllib.parse
                 encoded_prompt = urllib.parse.quote(prompt)
                 
-                # Use GET with image parameter for IMAGE-TO-IMAGE
+                # Simple TEXT-TO-IMAGE (img2img doesn't work without auth)
                 url = f"{self.base_url}/{encoded_prompt}"
                 
                 params = {
@@ -81,10 +78,9 @@ class PollinationsProvider(AIProvider):
                     "seed": seed,
                     "nologo": "true",
                     "model": "flux",
-                    "image": product_url,  # Reference image for img2img
                 }
                 
-                print(f"[Pollinations] IMG2IMG: {url} with image: {product_url[:50]}...")
+                print(f"[Pollinations] Text-to-image: {url}")
                 response = await self.client.get(url, params=params)
                 print(f"[Pollinations] Response status: {response.status_code}")
                 
@@ -163,9 +159,8 @@ class PollinationsProvider(AIProvider):
     
     def _build_prompt(self, request: GenerationRequest) -> str:
         """Build prompt for Pollinations.ai - keep it SHORT for URL."""
-        # Pollinations uses GET with prompt in URL - must be concise
-        # The image parameter handles the product, so just describe the scene
-        return request.scene_prompt
+        # Pollinations text-to-image: describe product + scene concisely
+        return f"product in {request.scene_prompt}, professional photography"
     
     def estimate_cost(self, request: GenerationRequest) -> float:
         """Completely FREE!"""
