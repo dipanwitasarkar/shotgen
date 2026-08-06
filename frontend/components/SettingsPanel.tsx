@@ -33,7 +33,7 @@ const PROVIDERS: Provider[] = [
   {
     id: 'freeai',
     name: 'Free.ai ⭐ FREE (Signup Required)',
-    description: 'FREE 30k tokens/day - Just signup, no credit card',
+    description: 'Free tier available - Just signup, no credit card',
     apiKeyLabel: 'API Key (Sign up free at free.ai)',
     keyUrl: 'https://free.ai',
     models: [
@@ -45,23 +45,23 @@ const PROVIDERS: Provider[] = [
   {
     id: 'stability',
     name: 'Stability AI (Paid)',
-    description: '$0.04 per image - Requires credit card',
+    description: 'Pay per image - Requires credit card',
     apiKeyLabel: 'API Key',
     keyUrl: 'https://platform.stability.ai/account/keys',
     models: [
-      { id: 'sd3-turbo', name: 'SD3 Turbo', description: 'IMG2IMG - $0.04/image' },
-      { id: 'sd3', name: 'SD3', description: 'IMG2IMG - $0.065/image' },
-      { id: 'sdxl', name: 'SDXL 1.0', description: 'IMG2IMG - $0.04/image' },
+      { id: 'sd3-turbo', name: 'SD3 Turbo', description: 'IMG2IMG - Fastest' },
+      { id: 'sd3', name: 'SD3', description: 'IMG2IMG - High quality' },
+      { id: 'sdxl', name: 'SDXL 1.0', description: 'IMG2IMG - Classic' },
     ],
   },
   {
     id: 'together',
-    name: 'Together AI (IMG2IMG)',
-    description: 'Free 3 months unlimited - Image-to-image support',
+    name: 'Together AI (Free Trial)',
+    description: 'Free trial available - Image-to-image support',
     apiKeyLabel: 'API Key',
     keyUrl: 'https://api.together.ai/settings/api-keys',
     models: [
-      { id: 'flux-schnell-free', name: 'FLUX.1 Schnell (Free)', description: 'IMG2IMG - 3 months unlimited' },
+      { id: 'flux-schnell-free', name: 'FLUX.1 Schnell (Free)', description: 'IMG2IMG - Free tier' },
       { id: 'flux-schnell', name: 'FLUX.1 Schnell', description: 'IMG2IMG - Fast' },
       { id: 'flux-dev', name: 'FLUX.2 Dev', description: 'IMG2IMG - High quality' },
       { id: 'flux-pro', name: 'FLUX.1.1 Pro', description: 'IMG2IMG - Best quality' },
@@ -96,13 +96,13 @@ const PROVIDERS: Provider[] = [
   },
   {
     id: 'google',
-    name: 'Google Imagen 3',
-    description: 'Google AI, free tier coming soon',
+    name: 'Google Imagen 3 (Paid)',
+    description: 'Google AI - Pay per image',
     apiKeyLabel: 'API Key',
     keyUrl: 'https://aistudio.google.com/app/apikey',
     models: [
-      { id: 'imagen-3-fast', name: 'Imagen 3 Fast', description: 'Google - Fast, $0.03/image' },
-      { id: 'imagen-3', name: 'Imagen 3', description: 'Google - Highest quality, $0.03/image' },
+      { id: 'imagen-3-fast', name: 'Imagen 3 Fast', description: 'IMG2IMG - Fast' },
+      { id: 'imagen-3', name: 'Imagen 3', description: 'IMG2IMG - Highest quality' },
     ],
   },
   {
