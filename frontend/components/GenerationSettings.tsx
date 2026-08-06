@@ -234,20 +234,25 @@ export function GenerationSettings({
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <label className="block text-sm font-medium text-gray-700">
-                  Background Change
+                  Scene Transformation
                 </label>
                 <span className="text-sm font-medium text-brand-600">{strength.toFixed(2)}</span>
               </div>
               <input
                 type="range"
-                min={0}
-                max={1}
+                min={0.3}
+                max={0.7}
                 step={0.05}
                 value={strength}
                 onChange={(e) => onStrengthChange(parseFloat(e.target.value))}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-500"
               />
-              <p className="text-xs text-gray-500">Higher = more background change (product stays)</p>
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>0.3 (subtle)</span>
+                <span>0.5 (balanced)</span>
+                <span>0.7 (strong)</span>
+              </div>
+              <p className="text-xs text-gray-500">Controls how much the scene changes. 0.5 recommended.</p>
             </div>
           )}
 

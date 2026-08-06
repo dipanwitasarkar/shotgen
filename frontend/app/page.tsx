@@ -21,7 +21,7 @@ export default function Home() {
   const [aspectRatio, setAspectRatio] = useState('1:1')
   const [quality, setQuality] = useState(50)
   const [variations, setVariations] = useState(2)
-  const [strength, setStrength] = useState(0.85)
+  const [strength, setStrength] = useState(0.5)  // 0.5 = balanced (keep product, change scene)
   const [guidanceScale, setGuidanceScale] = useState(7.5)
   const [inferenceSteps, setInferenceSteps] = useState(30)
   
