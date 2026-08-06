@@ -31,27 +31,27 @@ interface Model {
 
 const PROVIDERS: Provider[] = [
   {
-    id: 'stability',
-    name: 'Stability AI ⭐ WORKS NOW',
-    description: 'You have API key - IMG2IMG ready!',
-    apiKeyLabel: 'API Key',
-    keyUrl: 'https://platform.stability.ai/account/keys',
+    id: 'freeai',
+    name: 'Free.ai ⭐ FREE (Signup Required)',
+    description: 'FREE 30k tokens/day - Just signup, no credit card',
+    apiKeyLabel: 'API Key (Sign up free at free.ai)',
+    keyUrl: 'https://free.ai',
     models: [
-      { id: 'sd3-turbo', name: 'SD3 Turbo', description: '⭐ IMG2IMG - Fastest, cheapest' },
-      { id: 'sd3', name: 'SD3', description: 'IMG2IMG - High quality' },
-      { id: 'sdxl', name: 'SDXL 1.0', description: 'IMG2IMG - Classic' },
+      { id: 'sdxl', name: 'SDXL', description: '⭐ FREE IMG2IMG - Best option' },
+      { id: 'flux-schnell', name: 'FLUX Schnell', description: '⭐ FREE IMG2IMG - Fast' },
+      { id: 'sd-turbo', name: 'SD Turbo', description: '⭐ FREE IMG2IMG - Fastest' },
     ],
   },
   {
-    id: 'freeai',
-    name: 'Free.ai (Requires Signup)',
-    description: 'Free but needs account - 30k tokens/day',
-    apiKeyLabel: 'API Key (Get from free.ai)',
-    keyUrl: 'https://free.ai',
+    id: 'stability',
+    name: 'Stability AI (Paid)',
+    description: '$0.04 per image - Requires credit card',
+    apiKeyLabel: 'API Key',
+    keyUrl: 'https://platform.stability.ai/account/keys',
     models: [
-      { id: 'sdxl', name: 'SDXL', description: 'IMG2IMG - Free with signup' },
-      { id: 'flux-schnell', name: 'FLUX Schnell', description: 'IMG2IMG - Free with signup' },
-      { id: 'sd-turbo', name: 'SD Turbo', description: 'IMG2IMG - Free with signup' },
+      { id: 'sd3-turbo', name: 'SD3 Turbo', description: 'IMG2IMG - $0.04/image' },
+      { id: 'sd3', name: 'SD3', description: 'IMG2IMG - $0.065/image' },
+      { id: 'sdxl', name: 'SDXL 1.0', description: 'IMG2IMG - $0.04/image' },
     ],
   },
   {
