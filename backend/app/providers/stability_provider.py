@@ -69,7 +69,7 @@ class StabilityProvider(AIProvider):
                         "model": self.MODELS[self.default_model],
                         "mode": "image-to-image",  # IMAGE-TO-IMAGE mode
                         "output_format": "png",
-                        "strength": 0.5,  # How much to transform (0.0-1.0)
+                        "strength": request.strength,  # From UI slider
                         "seed": seed,
                     },
                 )

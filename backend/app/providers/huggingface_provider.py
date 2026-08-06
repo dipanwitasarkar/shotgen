@@ -57,7 +57,9 @@ class HuggingFaceProvider(AIProvider):
             "parameters": {
                 "width": request.output_width,
                 "height": request.output_height,
-                "num_inference_steps": 4 if "schnell" in model_id else 20,
+                "num_inference_steps": request.inference_steps,  # From UI slider
+                "guidance_scale": request.guidance_scale,  # From UI slider
+                "strength": request.strength,  # From UI slider
             }
         }
         

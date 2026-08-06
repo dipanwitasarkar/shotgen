@@ -68,7 +68,9 @@ class ReplicateProvider(AIProvider):
                     "width": request.output_width,
                     "height": request.output_height,
                     "num_outputs": 1,
-                    "prompt_strength": 0.8,  # How much to follow prompt vs preserve image
+                    "prompt_strength": request.strength,  # From UI slider
+                    "guidance_scale": request.guidance_scale,  # From UI slider
+                    "num_inference_steps": request.inference_steps,  # From UI slider
                     "seed": seed,
                 }
             )

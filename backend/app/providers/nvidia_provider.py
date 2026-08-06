@@ -66,6 +66,8 @@ class NVIDIAProvider(AIProvider):
             "prompt": prompt,
             "width": request.output_width,
             "height": request.output_height,
+            "guidance_scale": request.guidance_scale,  # From UI slider
+            "num_inference_steps": request.inference_steps,  # From UI slider
         }
         
         if request.seed is not None:

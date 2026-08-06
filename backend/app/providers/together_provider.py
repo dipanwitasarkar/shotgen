@@ -62,8 +62,8 @@ class TogetherProvider(AIProvider):
             "width": request.output_width,
             "height": request.output_height,
             "n": request.num_variations,
-            "steps": 4 if "schnell" in model else 20,
-            "prompt_strength": 0.8,  # Balance between prompt and image
+            "steps": request.inference_steps,  # From UI slider
+            "prompt_strength": request.strength,  # From UI slider (balance between prompt and image)
         }
         
         if request.seed:
