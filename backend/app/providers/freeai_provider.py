@@ -88,22 +88,21 @@ class FreeAIProvider(AIProvider):
                 
                 result = response.json()
                 print(f"[Free.ai] Response keys: {result.keys()}")
-                print(f"[Free.ai] Full response: {str(result)[:500]}")
                 
-                # Get image from response
-                if "data" in result and len(result["data"]) > 0:
-                    img_data = result["data"][0]
-                    if "b64_json" in img_data:
-                        img_bytes = base64.b64decode(img_data["b64_json"])
-                        img = Image.open(io.BytesIO(img_bytes))
-                        images.append(img)
-                        seeds.append(seed or 0)
-                    elif "url" in img_data:
-                        # Download from URL
-                        img_response = await self.client.get(img_data["url"])
-                        img = Image.open(io.BytesIO(img_response.content))
-                        images.append(img)
-                        seeds.append(seed or 0)
+                # Free.ai returns: {"url": "...", "image_url": "...", "output_url": "..."}
+                # NOT the OpenAI format with "data" array
+                image_url = result.get("url") or result.get("image_url") or result.get("output_url")
+                
+                if image_url:
+                    print(f"[Free.ai] Downloading image from: {image_url}")
+                    img_response = await self.client.get(image_url)
+                    img = Image.open(io.BytesIO(img_response.content))
+                    images.append(img)
+                    seeds.append(seed or 0)
+                    print(f"[Free.ai] Image downloaded successfully")
+                else:
+                    print(f"[Free.ai] No image URL in response: {result}")
+                    raise Exception("Free.ai: No image URL in response")
             
             generation_time_ms = int((time.time() - start_time) * 1000)
             
