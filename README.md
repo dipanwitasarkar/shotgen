@@ -6,16 +6,18 @@ Transform your product photos into professional lifestyle shots using AI. Upload
 
 ## Features
 
-- **40+ Scene Templates** - Organized by category: Studio, Home, Outdoor, Lifestyle, Luxury, Tech, Seasonal, Food, Nature
+- **IMAGE-TO-IMAGE Generation** - Your uploaded product appears in generated scenes
+- **40+ Scene Templates** - Studio, Home, Outdoor, Lifestyle, Luxury, Tech, Seasonal, Food, Nature
 - **Custom Scene Prompts** - Write your own scene descriptions for full creative control
+- **Advanced IMG2IMG Controls** - Adjust transformation strength, prompt guidance, quality steps
+- **Prompt Preview & Editing** - See and edit the exact prompt sent to AI
 - **Multiple Aspect Ratios** - 1:1, 4:3, 3:4, 16:9, 9:16, 3:2 for any platform
-- **Quality Control** - Adjustable quality slider (Fast/Balanced/High Quality)
 - **Background Removal** - Automatic product cutout with rembg
 - **Style Options** - Realistic, Artistic, Minimal, Lifestyle, Editorial, Cinematic
 - **Lighting Options** - Studio, Natural, Dramatic, Soft, Golden Hour, Neon
 - **Camera Angles** - Front, 45°, Top-down, Side, Low, Hero
-- **5 AI Providers** - NVIDIA NIM, Together AI (free), Hugging Face (free), Replicate, Stability AI
-- **Free Tier Options** - Together AI and Hugging Face offer free inference
+- **7 AI Providers** - Free.ai (FREE), Together AI, Hugging Face, Stability AI, Replicate, NVIDIA NIM, Google Imagen
+- **Free Options** - Free.ai (signup required), Together AI (free trial), Hugging Face (free forever)
 - **In-App API Key Configuration** - No need to edit .env files
 - **Self-Hostable** - Full control over your data and costs
 
@@ -61,43 +63,31 @@ npm run dev
 
 ### Configuration
 
-**Option 1: In-App Settings (Recommended)**
+**In-App Settings (Recommended)**
 
 1. Open http://localhost:3000
-2. Click the Settings panel
-3. Choose your AI provider (Replicate, Stability AI, or FAL)
-4. Select a model (SDXL, Flux, SD3, etc.)
+2. Click the Settings panel (⚙️)
+3. Choose your AI provider:
+   - **Free.ai** ⭐ FREE (signup required) - Best for testing
+   - **Together AI** - Free trial available
+   - **Hugging Face** - Free forever
+   - **Stability AI** - Pay per image
+   - **Replicate** - Pay per use
+   - **NVIDIA NIM** - Enterprise
+   - **Google Imagen** - Pay per image
+4. Select a model (SDXL, FLUX, SD3, etc.)
 5. Paste your API key
 6. Click Save
 
-**Option 2: Environment Variables**
-
-Create a `.env` file in the root directory:
-
-```env
-# AI Provider (choose one)
-AI_PROVIDER=replicate  # replicate | stability | fal
-
-# Replicate
-REPLICATE_API_TOKEN=your_token_here
-
-# Stability AI
-STABILITY_API_KEY=your_key_here
-
-# FAL
-FAL_KEY=your_key_here
-
-# Database (optional)
-DATABASE_URL=postgresql://user:pass@localhost:5432/shotgen
-```
-
 ### Get API Keys
 
-- **NVIDIA NIM**: https://build.nvidia.com/explore/discover
-- **Together AI** ⭐ (Free tier): https://api.together.ai/settings/api-keys
-- **Hugging Face** ⭐ (All free): https://huggingface.co/settings/tokens
-- **Replicate**: https://replicate.com/account/api-tokens
-- **Stability AI**: https://platform.stability.ai/account/keys
+- **Free.ai** ⭐ (FREE with signup): https://free.ai
+- **Together AI** (Free trial): https://api.together.ai/settings/api-keys
+- **Hugging Face** (Free forever): https://huggingface.co/settings/tokens
+- **Stability AI** (Paid): https://platform.stability.ai/account/keys
+- **Replicate** (Paid): https://replicate.com/account/api-tokens
+- **NVIDIA NIM** (Paid): https://build.nvidia.com/explore/discover
+- **Google Imagen** (Paid): https://aistudio.google.com/app/apikey
 
 ## Usage
 
