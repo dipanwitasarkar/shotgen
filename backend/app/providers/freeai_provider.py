@@ -58,12 +58,16 @@ class FreeAIProvider(AIProvider):
             for i in range(request.num_variations):
                 seed = request.seed + i if request.seed else None
                 
-                # Use JSON payload with base64 image for img2img
+                # For img2img: strength controls how much to change
+                # Lower strength (0.3-0.5) = keep product, change background slightly
+                # Higher strength (0.7-0.9) = transform everything (loses product)
+                # We need LOWER strength to preserve the product
+                
                 payload = {
-                    "prompt": prompt,
+                    "prompt": f"{prompt}, product in center, keep product intact",
                     "model": "sdxl",
                     "image": f"data:image/png;base64,{img_b64}",  # Reference image
-                    "strength": request.strength,  # From UI slider
+                    "strength": 0.5,  # Fixed: keep product, change background
                     "guidance_scale": request.guidance_scale,  # From UI slider
                     "num_inference_steps": request.inference_steps,  # From UI slider
                 }
