@@ -162,20 +162,10 @@ class PollinationsProvider(AIProvider):
             return f"data:image/png;base64,{img_b64}"
     
     def _build_prompt(self, request: GenerationRequest) -> str:
-        """Build prompt for Pollinations.ai."""
-        # For text-to-image, we need to describe the product in the prompt
-        # Since we can't use the actual product image, we describe it generically
-        parts = [
-            "product",  # Generic product placeholder
-            request.scene_prompt,
-            f"{request.style} style",
-            f"{request.lighting} lighting",
-            f"{request.angle} angle view",
-            "professional product photography",
-            "high quality",
-            "centered composition",
-        ]
-        return ", ".join(parts)
+        """Build prompt for Pollinations.ai - keep it SHORT for URL."""
+        # Pollinations uses GET with prompt in URL - must be concise
+        # The image parameter handles the product, so just describe the scene
+        return request.scene_prompt
     
     def estimate_cost(self, request: GenerationRequest) -> float:
         """Completely FREE!"""
