@@ -49,14 +49,21 @@ class TogetherProvider(AIProvider):
         # Get model
         model = self.MODELS.get(request.seed or "flux-schnell-free", self.MODELS["flux-schnell-free"])
         
-        # Prepare payload
+        # Convert product image to base64 for IMAGE-TO-IMAGE
+        img_byte_arr = io.BytesIO()
+        request.product_image.save(img_byte_arr, format='PNG')
+        img_b64 = base64.b64encode(img_byte_arr.getvalue()).decode()
+        
+        # Prepare payload with IMAGE INPUT
         payload = {
             "model": model,
             "prompt": prompt,
+            "image": f"data:image/png;base64,{img_b64}",  # INPUT IMAGE
             "width": request.output_width,
             "height": request.output_height,
             "n": request.num_variations,
             "steps": 4 if "schnell" in model else 20,
+            "prompt_strength": 0.8,  # Balance between prompt and image
         }
         
         if request.seed:

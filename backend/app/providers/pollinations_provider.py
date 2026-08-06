@@ -63,23 +63,32 @@ class PollinationsProvider(AIProvider):
                 else:
                     seed = (int(time.time()) + i) % 2147483647
                 
-                # Build URL with minimal parameters for free tier
-                # Note: Free tier has rate limits (1 req/15s for anonymous)
-                # Use simple parameters that don't require pollen
-                params = {
-                    "width": request.output_width,
-                    "height": request.output_height,
-                    "seed": seed,
-                    "nologo": "true",  # Remove watermark
-                }
+                # Convert product image to bytes for IMAGE-TO-IMAGE
+                img_byte_arr = io.BytesIO()
+                request.product_image.save(img_byte_arr, format='PNG')
+                img_byte_arr.seek(0)
                 
                 # URL encode the prompt
                 import urllib.parse
                 encoded_prompt = urllib.parse.quote(prompt)
-                url = f"{self.base_url}/{encoded_prompt}"
                 
-                print(f"[Pollinations] Requesting: {url} with params: {params}")
-                response = await self.client.get(url, params=params)
+                # Use POST for IMAGE-TO-IMAGE with file upload
+                url = f"https://gen.pollinations.ai/image/{encoded_prompt}"
+                
+                files = {
+                    "image": ("product.png", img_byte_arr, "image/png"),
+                }
+                
+                params = {
+                    "width": request.output_width,
+                    "height": request.output_height,
+                    "seed": seed,
+                    "nologo": "true",
+                    "model": "flux",  # Use FLUX for img2img
+                }
+                
+                print(f"[Pollinations] IMG2IMG: {url} with params: {params}")
+                response = await self.client.post(url, files=files, params=params)
                 print(f"[Pollinations] Response status: {response.status_code}")
                 
                 if response.status_code != 200:

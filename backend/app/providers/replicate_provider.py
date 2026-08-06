@@ -59,13 +59,16 @@ class ReplicateProvider(AIProvider):
         for i in range(request.num_variations):
             seed = request.seed + i if request.seed else None
             
+            # Use IMAGE-TO-IMAGE with product as input
             output = self.client.run(
                 model_id,
                 input={
                     "prompt": prompt,
+                    "image": f"data:image/png;base64,{product_base64}",  # INPUT IMAGE
                     "width": request.output_width,
                     "height": request.output_height,
                     "num_outputs": 1,
+                    "prompt_strength": 0.8,  # How much to follow prompt vs preserve image
                     "seed": seed,
                 }
             )
