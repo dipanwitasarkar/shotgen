@@ -4,6 +4,7 @@ No API key required, no signup, completely free.
 """
 import io
 import time
+import base64
 from PIL import Image
 import httpx
 
@@ -23,6 +24,7 @@ class PollinationsProvider(AIProvider):
     def __init__(self, api_key: str = ""):
         self.api_key = api_key  # Optional, not required for free tier
         self.base_url = "https://image.pollinations.ai/prompt"
+        self.gen_base_url = "https://gen.pollinations.ai"
         headers = {}
         # API key is optional for Pollinations
         if api_key and api_key != "no-key-needed":
@@ -55,6 +57,9 @@ class PollinationsProvider(AIProvider):
         seeds = []
         
         try:
+            # First, upload product image to get a URL (required for img2img)
+            product_url = await self._upload_product_image(request.product_image)
+            
             for i in range(request.num_variations):
                 # Use different seeds for variations
                 # Pollinations max seed is 2147483647 (32-bit signed int max)
@@ -63,32 +68,24 @@ class PollinationsProvider(AIProvider):
                 else:
                     seed = (int(time.time()) + i) % 2147483647
                 
-                # Convert product image to bytes for IMAGE-TO-IMAGE
-                img_byte_arr = io.BytesIO()
-                request.product_image.save(img_byte_arr, format='PNG')
-                img_byte_arr.seek(0)
-                
                 # URL encode the prompt
                 import urllib.parse
                 encoded_prompt = urllib.parse.quote(prompt)
                 
-                # Use POST for IMAGE-TO-IMAGE with file upload
-                url = f"https://gen.pollinations.ai/image/{encoded_prompt}"
-                
-                files = {
-                    "image": ("product.png", img_byte_arr, "image/png"),
-                }
+                # Use GET with image parameter for IMAGE-TO-IMAGE
+                url = f"{self.base_url}/{encoded_prompt}"
                 
                 params = {
                     "width": request.output_width,
                     "height": request.output_height,
                     "seed": seed,
                     "nologo": "true",
-                    "model": "flux",  # Use FLUX for img2img
+                    "model": "flux",
+                    "image": product_url,  # Reference image for img2img
                 }
                 
-                print(f"[Pollinations] IMG2IMG: {url} with params: {params}")
-                response = await self.client.post(url, files=files, params=params)
+                print(f"[Pollinations] IMG2IMG: {url} with image: {product_url[:50]}...")
+                response = await self.client.get(url, params=params)
                 print(f"[Pollinations] Response status: {response.status_code}")
                 
                 if response.status_code != 200:
@@ -138,6 +135,31 @@ class PollinationsProvider(AIProvider):
             if "Pollinations.ai" not in error_str:
                 raise Exception(f"Pollinations.ai: {error_str}")
             raise
+    
+    async def _upload_product_image(self, image: Image.Image) -> str:
+        """Upload product image to Pollinations media storage and return URL."""
+        # Convert image to base64
+        img_byte_arr = io.BytesIO()
+        image.save(img_byte_arr, format='PNG')
+        img_byte_arr.seek(0)
+        img_b64 = base64.b64encode(img_byte_arr.getvalue()).decode()
+        
+        # Upload to media.pollinations.ai
+        try:
+            response = await self.client.post(
+                "https://media.pollinations.ai/upload",
+                json={
+                    "data": f"data:image/png;base64,{img_b64}",
+                    "contentType": "image/png",
+                }
+            )
+            response.raise_for_status()
+            result = response.json()
+            return result["url"]
+        except Exception as e:
+            print(f"[Pollinations] Upload failed: {e}")
+            # Fallback: use base64 data URL directly
+            return f"data:image/png;base64,{img_b64}"
     
     def _build_prompt(self, request: GenerationRequest) -> str:
         """Build prompt for Pollinations.ai."""
