@@ -4,6 +4,17 @@
 
 Transform your product photos into professional lifestyle shots using AI. Upload a product image, choose a scene, and get studio-quality photos in seconds.
 
+## Demo Video
+
+https://github.com/user-attachments/assets/shotgen_final.mp4
+
+> **⚠️ Note:** This demo was recorded using **Free.ai** (free tier) for demonstration purposes. Free.ai only supports text-to-image generation and does **NOT** preserve your product in the output. 
+> 
+> **For professional product photography with accurate product preservation, use:**
+> - ✅ **Stability AI** (Recommended) - Inpainting mode preserves product exactly
+> - ✅ **Replicate** - Good alternative with Inpainting + ControlNet
+> - ✅ **Together AI, Hugging Face, NVIDIA NIM** - All support proper IMG2IMG
+
 ## Features
 
 ### 🎨 **Core Features**
