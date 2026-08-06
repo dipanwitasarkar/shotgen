@@ -70,6 +70,8 @@ class StabilityProvider(AIProvider):
                         "mode": "image-to-image",  # IMAGE-TO-IMAGE mode
                         "output_format": "png",
                         "strength": request.strength,  # From UI slider
+                        "cfg_scale": request.guidance_scale,  # From UI slider (Stability calls it cfg_scale)
+                        "steps": request.inference_steps,  # From UI slider
                         "seed": seed,
                     },
                 )

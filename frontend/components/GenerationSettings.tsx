@@ -227,7 +227,10 @@ export function GenerationSettings({
       {/* Advanced IMG2IMG Settings */}
       {(strength !== undefined || guidanceScale !== undefined || inferenceSteps !== undefined) && (
         <div className="space-y-4 pt-4 border-t border-gray-200">
-          <h3 className="text-sm font-semibold text-gray-700">🎛️ Advanced IMG2IMG</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-gray-700">⚙️ Advanced Settings</h3>
+            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">Optional</span>
+          </div>
           
           {/* Transformation Strength */}
           {strength !== undefined && onStrengthChange && (

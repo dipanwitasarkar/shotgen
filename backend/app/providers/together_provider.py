@@ -64,6 +64,7 @@ class TogetherProvider(AIProvider):
             "n": request.num_variations,
             "steps": request.inference_steps,  # From UI slider
             "prompt_strength": request.strength,  # From UI slider (balance between prompt and image)
+            "guidance_scale": request.guidance_scale,  # From UI slider
         }
         
         if request.seed:

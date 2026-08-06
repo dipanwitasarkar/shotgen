@@ -61,26 +61,26 @@ class NVIDIAProvider(AIProvider):
         # e.g., /v1/genai/black-forest-labs/flux.1-schnell
         endpoint = f"/v1/genai/{model_path}"
         
-        # NVIDIA native payload format
+        # Convert product image to base64 for img2img
+        buffered = io.BytesIO()
+        request.product_image.save(buffered, format="PNG")
+        img_b64 = base64.b64encode(buffered.getvalue()).decode()
+        
+        # NVIDIA native payload format with image
         payload = {
             "prompt": prompt,
+            "image": img_b64,  # Product image for img2img
             "width": request.output_width,
             "height": request.output_height,
             "guidance_scale": request.guidance_scale,  # From UI slider
             "num_inference_steps": request.inference_steps,  # From UI slider
+            "strength": request.strength,  # From UI slider
         }
         
         if request.seed is not None:
             payload["seed"] = request.seed
         
-        # For edit models, add the uploaded image
-        is_edit_model = "edit" in model_key
-        if is_edit_model and hasattr(request, 'input_image') and request.input_image:
-            # Convert PIL image to base64
-            buffered = io.BytesIO()
-            request.input_image.save(buffered, format="PNG")
-            img_b64 = base64.b64encode(buffered.getvalue()).decode()
-            payload["image"] = img_b64
+        print(f"[NVIDIA] IMG2IMG - Image sent: YES, Strength: {request.strength}")
         
         # Call NVIDIA API (generate multiple images sequentially if needed)
         images = []
