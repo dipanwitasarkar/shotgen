@@ -10,12 +10,14 @@ from app.providers.together_provider import TogetherProvider
 from app.providers.huggingface_provider import HuggingFaceProvider
 from app.providers.google_provider import GoogleProvider
 from app.providers.pollinations_provider import PollinationsProvider
+from app.providers.freeai_provider import FreeAIProvider
 
 
 class ProviderFactory:
     """Factory for creating AI provider instances."""
     
     _providers: dict[str, type[AIProvider]] = {
+        "freeai": FreeAIProvider,
         "together": TogetherProvider,
         "huggingface": HuggingFaceProvider,
         "nvidia": NVIDIAProvider,
@@ -63,7 +65,7 @@ class ProviderFactory:
                 key = settings.stability_api_key
         
         # Some providers don't need API keys
-        keyless_providers = ["pollinations"]
+        keyless_providers = ["pollinations", "freeai"]
         
         if not key and name not in keyless_providers:
             raise ValueError(f"API key required for {name}. Configure in Settings panel.")

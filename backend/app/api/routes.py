@@ -278,6 +278,44 @@ async def get_settings():
     )
 
 
+@router.post("/preview-prompt")
+async def preview_prompt(
+    scene: Annotated[str, Form()] = "white_studio",
+    style: Annotated[str, Form()] = "realistic",
+    lighting: Annotated[str, Form()] = "studio",
+    angle: Annotated[str, Form()] = "front",
+    service: ImageGenerationService = Depends(get_image_generation_service),
+):
+    """Preview the prompt that will be sent to the AI model."""
+    scene_prompt = service._build_scene_prompt(scene)
+    
+    # Build the full prompt as the provider would see it
+    from app.providers.base import GenerationRequest
+    from PIL import Image
+    import io
+    
+    # Create a dummy 1x1 image for prompt building
+    dummy_img = Image.new('RGB', (1, 1))
+    
+    dummy_request = GenerationRequest(
+        product_image=dummy_img,
+        scene_prompt=scene_prompt,
+        style=style,
+        lighting=lighting,
+        angle=angle,
+    )
+    
+    # Get the actual prompt from the provider
+    provider_prompt = service.ai_provider._build_prompt(dummy_request)
+    
+    return {
+        "scene_prompt": scene_prompt,
+        "full_prompt": provider_prompt,
+        "provider": service.ai_provider.name,
+        "model": getattr(service.ai_provider, 'default_model', 'unknown'),
+    }
+
+
 @router.get("/models", response_model=ModelsResponse)
 async def get_available_models():
     """Get available models for each provider."""

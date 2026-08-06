@@ -7,6 +7,7 @@ import { SceneSelector } from '@/components/SceneSelector'
 import { GenerationSettings, ASPECT_RATIO_DIMENSIONS } from '@/components/GenerationSettings'
 import { ResultGallery } from '@/components/ResultGallery'
 import { SettingsPanel, AppSettings } from '@/components/SettingsPanel'
+import { PromptPreview } from '@/components/PromptPreview'
 import { api, GenerationResult } from '@/lib/api'
 
 export default function Home() {
@@ -169,6 +170,16 @@ export default function Home() {
                 onVariationsChange={setVariations}
               />
             </div>
+
+            {/* Prompt Preview */}
+            <PromptPreview
+              scene={scene}
+              style={style}
+              lighting={lighting}
+              angle={angle}
+              customPrompt={customPrompt}
+              onCustomPromptChange={setCustomPrompt}
+            />
 
             {/* Generate Button */}
             <button
