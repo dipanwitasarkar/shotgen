@@ -66,13 +66,19 @@ class FreeAIProvider(AIProvider):
                 data = {
                     "prompt": prompt,
                     "model": "sdxl",
-                    "strength": 0.75,  # How much to transform (0-1)
+                    "strength": 0.85,  # Higher = more transformation (0-1)
+                    "guidance_scale": 7.5,  # How closely to follow prompt
+                    "num_inference_steps": 30,  # More steps = better quality
                 }
                 
                 if seed:
                     data["seed"] = seed
                 
-                print(f"[Free.ai] IMG2IMG request with model: {data['model']}")
+                print(f"[Free.ai] IMG2IMG request:")
+                print(f"  Model: {data['model']}")
+                print(f"  Prompt: {prompt}")
+                print(f"  Strength: {data['strength']}")
+                
                 response = await self.client.post(
                     f"{self.base_url}/image/edit/",  # img2img endpoint
                     files=files,
