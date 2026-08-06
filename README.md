@@ -4,11 +4,13 @@
 
 Transform your product photos into professional lifestyle shots using AI. Upload a product image, choose a scene, and get studio-quality photos in seconds.
 
-## 🎥 Demo Video
+## 🎥 Demo
 
 Watch ShotGen in action:
 
-https://github.com/user-attachments/assets/shotgen_final.mp4
+![ShotGen Demo](shotgen_demo.gif)
+
+**[📹 Watch Full Video (MP4)](shotgen_final.mp4)**
 
 <details>
 <summary><strong>⚠️ Important Note About This Demo</strong></summary>
