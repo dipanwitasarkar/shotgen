@@ -72,10 +72,9 @@ class FreeAIProvider(AIProvider):
                 if seed:
                     payload["seed"] = seed
                 
-                print(f"[Free.ai] IMG2IMG request:")
+                print(f"[Free.ai] Background generation:")
                 print(f"  Model: {payload['model']}")
-                print(f"  Prompt: {prompt}")
-                print(f"  Strength: {payload['strength']}")
+                print(f"  Prompt: {background_prompt}")
                 
                 response = await self.client.post(
                     f"{self.base_url}/image/generate/",  # Correct Free.ai endpoint
