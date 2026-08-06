@@ -59,15 +59,18 @@ class FreeAIProvider(AIProvider):
                 seed = request.seed + i if request.seed else None
                 
                 # For img2img: strength controls how much to change
-                # Lower strength (0.3-0.5) = keep product, change background slightly
+                # Lower strength (0.3-0.5) = keep product, change background
                 # Higher strength (0.7-0.9) = transform everything (loses product)
-                # We need LOWER strength to preserve the product
+                # UI slider is 0-1, but we need to INVERT it for img2img
+                # UI: 0.85 (high) should mean "keep product, change background a lot"
+                # API: needs low strength to keep product
+                img2img_strength = 1.0 - request.strength  # Invert: UI high = API low
                 
                 payload = {
                     "prompt": f"{prompt}, product in center, keep product intact",
                     "model": "sdxl",
                     "image": f"data:image/png;base64,{img_b64}",  # Reference image
-                    "strength": 0.5,  # Fixed: keep product, change background
+                    "strength": img2img_strength,  # From UI slider (inverted)
                     "guidance_scale": request.guidance_scale,  # From UI slider
                     "num_inference_steps": request.inference_steps,  # From UI slider
                 }

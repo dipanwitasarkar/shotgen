@@ -234,7 +234,7 @@ export function GenerationSettings({
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <label className="block text-sm font-medium text-gray-700">
-                  Transformation Strength
+                  Background Change
                 </label>
                 <span className="text-sm font-medium text-brand-600">{strength.toFixed(2)}</span>
               </div>
@@ -247,7 +247,7 @@ export function GenerationSettings({
                 onChange={(e) => onStrengthChange(parseFloat(e.target.value))}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-500"
               />
-              <p className="text-xs text-gray-500">Higher = more scene transformation</p>
+              <p className="text-xs text-gray-500">Higher = more background change (product stays)</p>
             </div>
           )}
 
