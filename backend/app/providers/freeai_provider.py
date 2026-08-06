@@ -58,23 +58,25 @@ class FreeAIProvider(AIProvider):
             for i in range(request.num_variations):
                 seed = request.seed + i if request.seed else None
                 
-                # Use image-to-image endpoint
-                payload = {
+                # Use multipart form data for image upload
+                files = {
+                    "image": ("product.png", io.BytesIO(base64.b64decode(img_b64)), "image/png")
+                }
+                
+                data = {
                     "prompt": prompt,
-                    "image": f"data:image/png;base64,{img_b64}",  # INPUT IMAGE
-                    "model": self.MODELS.get("sdxl", "sdxl"),
-                    "width": request.output_width,
-                    "height": request.output_height,
+                    "model": "sdxl",
                     "strength": 0.75,  # How much to transform (0-1)
                 }
                 
                 if seed:
-                    payload["seed"] = seed
+                    data["seed"] = seed
                 
-                print(f"[Free.ai] IMG2IMG request with model: {payload['model']}")
+                print(f"[Free.ai] IMG2IMG request with model: {data['model']}")
                 response = await self.client.post(
                     f"{self.base_url}/image/edit/",  # img2img endpoint
-                    json=payload
+                    files=files,
+                    data=data
                 )
                 
                 print(f"[Free.ai] Response status: {response.status_code}")
