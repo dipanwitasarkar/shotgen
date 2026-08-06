@@ -6,19 +6,35 @@ Transform your product photos into professional lifestyle shots using AI. Upload
 
 ## Features
 
+### 🎨 **Core Features**
 - **IMAGE-TO-IMAGE Generation** - Your uploaded product appears in generated scenes
 - **40+ Scene Templates** - Studio, Home, Outdoor, Lifestyle, Luxury, Tech, Seasonal, Food, Nature
 - **Custom Scene Prompts** - Write your own scene descriptions for full creative control
-- **Advanced IMG2IMG Controls** - Adjust transformation strength, prompt guidance, quality steps
-- **Prompt Preview & Editing** - See and edit the exact prompt sent to AI
-- **Multiple Aspect Ratios** - 1:1, 4:3, 3:4, 16:9, 9:16, 3:2 for any platform
 - **Background Removal** - Automatic product cutout with rembg
+- **Multiple Aspect Ratios** - 1:1, 4:3, 3:4, 16:9, 9:16, 3:2 for any platform
 - **Style Options** - Realistic, Artistic, Minimal, Lifestyle, Editorial, Cinematic
 - **Lighting Options** - Studio, Natural, Dramatic, Soft, Golden Hour, Neon
 - **Camera Angles** - Front, 45°, Top-down, Side, Low, Hero
-- **7 AI Providers** - Free.ai (FREE), Together AI, Hugging Face, Stability AI, Replicate, NVIDIA NIM, Google Imagen
+
+### 🚀 **Advanced Features** (NEW!)
+- **🎯 Inpainting Mode** - Preserves product exactly, changes only background (RECOMMENDED)
+- **🎨 ControlNet Mode** - Preserves product structure while changing style/scene
+- **📐 Resolution Options** - 1K (1024), 2K (2048), 4K (4096) for HD/Ultra HD export
+- **🖼️ Custom Backgrounds** - Upload your own background images
+- **🎛️ Advanced IMG2IMG Controls** - Strength, guidance scale, inference steps
+- **👁️ Prompt Preview & Editing** - See and edit the exact prompt sent to AI
+
+### 🤖 **AI Providers**
+- **7 AI Providers** - Free.ai, Together AI, Hugging Face, Stability AI, Replicate, NVIDIA NIM, Google Imagen
 - **Free Options** - Free.ai (signup required), Together AI (free trial), Hugging Face (free forever)
 - **In-App API Key Configuration** - No need to edit .env files
+- **All Providers Support IMG2IMG** - Product image + all parameters sent to every provider
+
+### 🔌 **Developer API** (NEW!)
+- **Public REST API** - `/api/v1/public/v1/generate` endpoint
+- **API Key Authentication** - Secure access with X-API-Key header
+- **Complete Documentation** - Python, cURL, JavaScript examples
+- **Rate Limiting** - Free (10/hr), Pro (100/hr), Enterprise (unlimited)
 - **Self-Hostable** - Full control over your data and costs
 
 ## Use Cases
@@ -91,12 +107,35 @@ npm run dev
 
 ## Usage
 
+### Basic Workflow
 1. Upload your product image
 2. Select a scene template or write a custom prompt
 3. Choose aspect ratio, style, lighting, and angle
-4. Adjust quality based on your needs
-5. Click "Generate Product Shots"
-6. Download your results
+4. Click "Generate Product Shots"
+5. Download your results
+
+### Advanced Workflow (NEW!)
+1. Upload your product image
+2. **Enable Inpainting Mode** (recommended) - preserves product exactly
+3. Select resolution (1K/2K/4K)
+4. Optional: Upload custom background
+5. Optional: Enable ControlNet for structure preservation
+6. Adjust advanced controls (strength, guidance, steps)
+7. Generate and download
+
+### Using the Public API
+```bash
+# Generate with inpainting (preserves product)
+curl -X POST http://localhost:8000/api/v1/public/v1/generate \
+  -H "X-API-Key: your-api-key" \
+  -F "image=@product.png" \
+  -F "scene=beach" \
+  -F "useInpainting=true" \
+  -F "width=2048" \
+  -F "height=2048"
+```
+
+See `/api/v1/public/v1/docs` for complete API documentation.
 
 ## Scene Templates
 
@@ -179,6 +218,7 @@ shotgen/
 
 ## API Endpoints
 
+### Internal API (Web App)
 ```
 POST   /api/v1/generate         - Generate product shots
 POST   /api/v1/remove-background - Remove background
@@ -187,22 +227,66 @@ GET    /api/v1/models           - Get available models
 POST   /api/v1/settings         - Update runtime settings
 GET    /api/v1/settings         - Get current settings
 GET    /api/v1/health           - Health check
+POST   /api/v1/preview-prompt   - Preview generated prompt
+```
+
+### Public API (Developers) - NEW!
+```
+POST   /api/v1/public/v1/generate  - Generate product shots (requires API key)
+GET    /api/v1/public/v1/docs      - API documentation with examples
+```
+
+**Authentication:** Include `X-API-Key` header with your API key
+
+**Example:**
+```python
+import requests
+
+response = requests.post(
+    'http://localhost:8000/api/v1/public/v1/generate',
+    headers={'X-API-Key': 'your-api-key'},
+    files={'image': open('product.png', 'rb')},
+    data={
+        'scene': 'beach',
+        'useInpainting': 'true',
+        'width': 2048,
+        'height': 2048
+    }
+)
+
+result = response.json()
+print(f"Generated {len(result['images'])} images")
 ```
 
 ## Roadmap
 
+### ✅ Completed
 - [x] Core image generation pipeline
 - [x] Background removal
-- [x] Multiple AI provider support
+- [x] Multiple AI provider support (7 providers)
 - [x] Scene templates library (40+ scenes)
 - [x] Custom scene prompts
 - [x] Aspect ratio options
 - [x] Quality control
 - [x] In-app API key configuration
+- [x] **Inpainting mode** (preserves product)
+- [x] **ControlNet support** (structure preservation)
+- [x] **Resolution options** (1K/2K/4K)
+- [x] **Custom background upload**
+- [x] **Public API** (developer access)
+- [x] **API documentation** (Python, cURL, JS examples)
+
+### 🚧 In Progress
 - [ ] Batch processing queue
-- [ ] API for integrations
+- [ ] Image history/gallery
+- [ ] A/B comparison view
+
+### 📋 Planned
 - [ ] Shopify plugin
-- [ ] Mobile app
+- [ ] WooCommerce integration
+- [ ] Mobile app (iOS/Android)
+- [ ] Video generation
+- [ ] 3D product placement
 
 ## Tech Stack
 
