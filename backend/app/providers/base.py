@@ -32,6 +32,7 @@ class GenerationResult:
     provider: str
     model: str
     generation_time_ms: int
+    cost_usd: float | None = None
 
 
 def build_img2img_prompt(request: GenerationRequest) -> str:
