@@ -8,7 +8,7 @@ import base64
 from PIL import Image
 import httpx
 
-from app.providers.base import AIProvider, GenerationRequest, GenerationResult, build_background_prompt, composite_product_on_background
+from app.providers.base import AIProvider, GenerationRequest, GenerationResult, build_img2img_prompt
 
 
 class FreeAIProvider(AIProvider):
@@ -58,13 +58,19 @@ class FreeAIProvider(AIProvider):
             for i in range(request.num_variations):
                 seed = request.seed + i if request.seed else None
                 
-                # APPROACH: Generate background, then composite product on top
-                background_prompt = build_background_prompt(request)
+                # TRUE IMG2IMG: Send product image + prompt, let AI blend them naturally
+                prompt = self._build_prompt(request)
+                
+                # For img2img, we want MEDIUM strength (0.4-0.6)
+                # Too low = no change, too high = loses product
+                # Use request.strength directly (user controls it)
+                img2img_strength = max(0.3, min(0.7, request.strength))  # Clamp between 0.3-0.7
                 
                 payload = {
-                    "prompt": background_prompt,
+                    "prompt": prompt,
                     "model": "sdxl",
-                    # NO image parameter - generate clean background
+                    "image": f"data:image/png;base64,{img_b64}",  # Product image as reference
+                    "strength": img2img_strength,
                     "guidance_scale": request.guidance_scale,
                     "num_inference_steps": request.inference_steps,
                 }
@@ -72,12 +78,12 @@ class FreeAIProvider(AIProvider):
                 if seed:
                     payload["seed"] = seed
                 
-                print(f"[Free.ai] Background generation:")
-                print(f"  Model: {payload['model']}")
-                print(f"  Prompt: {background_prompt}")
+                print(f"[Free.ai] IMG2IMG generation:")
+                print(f"  Prompt: {prompt[:100]}...")
+                print(f"  Strength: {img2img_strength}")
                 
                 response = await self.client.post(
-                    f"{self.base_url}/image/generate/",  # Correct Free.ai endpoint
+                    f"{self.base_url}/image/generate/",
                     json=payload
                 )
                 
@@ -89,35 +95,29 @@ class FreeAIProvider(AIProvider):
                     raise Exception(f"Free.ai API error: {error_text}")
                 
                 result = response.json()
-                print(f"[Free.ai] Response keys: {result.keys()}")
                 
-                # Get generated background
-                background_img = None
+                # Parse response
+                img = None
                 if "data" in result and len(result["data"]) > 0:
                     img_data = result["data"][0]
                     if "b64_json" in img_data:
                         img_bytes = base64.b64decode(img_data["b64_json"])
-                        background_img = Image.open(io.BytesIO(img_bytes))
+                        img = Image.open(io.BytesIO(img_bytes))
                     elif "url" in img_data:
                         img_response = await self.client.get(img_data["url"])
-                        background_img = Image.open(io.BytesIO(img_response.content))
+                        img = Image.open(io.BytesIO(img_response.content))
                 else:
                     image_url = result.get("url") or result.get("image_url") or result.get("output_url")
                     if image_url:
                         img_response = await self.client.get(image_url)
-                        background_img = Image.open(io.BytesIO(img_response.content))
+                        img = Image.open(io.BytesIO(img_response.content))
                 
-                if not background_img:
-                    raise Exception("Free.ai: No background generated")
+                if not img:
+                    raise Exception("Free.ai: No image generated")
                 
-                print(f"[Free.ai] Background generated, compositing product...")
-                
-                # Use shared composite function
-                final_img = composite_product_on_background(request.product_image, background_img, scale=0.6)
-                
-                images.append(final_img)
+                images.append(img)
                 seeds.append(seed or 0)
-                print(f"[Free.ai] Product composited successfully")
+                print(f"[Free.ai] Image generated successfully")
             
             generation_time_ms = int((time.time() - start_time) * 1000)
             
@@ -145,8 +145,8 @@ class FreeAIProvider(AIProvider):
             raise
     
     def _build_prompt(self, request: GenerationRequest) -> str:
-        """Build prompt for Free.ai - uses background prompt for composite approach."""
-        return build_background_prompt(request)
+        """Build prompt for Free.ai img2img."""
+        return build_img2img_prompt(request)
     
     def estimate_cost(self, request: GenerationRequest) -> float:
         """Completely FREE! 6000 tokens/day anonymous, 30000/day with free account."""
