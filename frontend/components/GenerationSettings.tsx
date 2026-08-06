@@ -9,12 +9,18 @@ interface GenerationSettingsProps {
   aspectRatio: string
   quality: number
   variations: number
+  strength?: number
+  guidanceScale?: number
+  inferenceSteps?: number
   onStyleChange: (style: string) => void
   onLightingChange: (lighting: string) => void
   onAngleChange: (angle: string) => void
   onAspectRatioChange: (ratio: string) => void
   onQualityChange: (quality: number) => void
   onVariationsChange: (variations: number) => void
+  onStrengthChange?: (strength: number) => void
+  onGuidanceScaleChange?: (scale: number) => void
+  onInferenceStepsChange?: (steps: number) => void
 }
 
 const STYLES = [
@@ -211,6 +217,79 @@ export function GenerationSettings({
           <span>4</span>
         </div>
       </div>
+
+      {/* Advanced IMG2IMG Settings */}
+      {(strength !== undefined || guidanceScale !== undefined || inferenceSteps !== undefined) && (
+        <div className="space-y-4 pt-4 border-t border-gray-200">
+          <h3 className="text-sm font-semibold text-gray-700">🎛️ Advanced IMG2IMG</h3>
+          
+          {/* Transformation Strength */}
+          {strength !== undefined && onStrengthChange && (
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <label className="block text-sm font-medium text-gray-700">
+                  Transformation Strength
+                </label>
+                <span className="text-sm font-medium text-brand-600">{strength.toFixed(2)}</span>
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={strength}
+                onChange={(e) => onStrengthChange(parseFloat(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-500"
+              />
+              <p className="text-xs text-gray-500">Higher = more scene transformation</p>
+            </div>
+          )}
+
+          {/* Guidance Scale */}
+          {guidanceScale !== undefined && onGuidanceScaleChange && (
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <label className="block text-sm font-medium text-gray-700">
+                  Prompt Guidance
+                </label>
+                <span className="text-sm font-medium text-brand-600">{guidanceScale.toFixed(1)}</span>
+              </div>
+              <input
+                type="range"
+                min={1}
+                max={20}
+                step={0.5}
+                value={guidanceScale}
+                onChange={(e) => onGuidanceScaleChange(parseFloat(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-500"
+              />
+              <p className="text-xs text-gray-500">Higher = follow prompt more strictly</p>
+            </div>
+          )}
+
+          {/* Inference Steps */}
+          {inferenceSteps !== undefined && onInferenceStepsChange && (
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <label className="block text-sm font-medium text-gray-700">
+                  Quality Steps
+                </label>
+                <span className="text-sm font-medium text-brand-600">{inferenceSteps}</span>
+              </div>
+              <input
+                type="range"
+                min={10}
+                max={50}
+                step={5}
+                value={inferenceSteps}
+                onChange={(e) => onInferenceStepsChange(parseInt(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-brand-500"
+              />
+              <p className="text-xs text-gray-500">More steps = better quality (slower)</p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

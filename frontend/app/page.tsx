@@ -21,6 +21,9 @@ export default function Home() {
   const [aspectRatio, setAspectRatio] = useState('1:1')
   const [quality, setQuality] = useState(50)
   const [variations, setVariations] = useState(2)
+  const [strength, setStrength] = useState(0.85)
+  const [guidanceScale, setGuidanceScale] = useState(7.5)
+  const [inferenceSteps, setInferenceSteps] = useState(30)
   
   const [isGenerating, setIsGenerating] = useState(false)
   const [result, setResult] = useState<GenerationResult | null>(null)
@@ -162,12 +165,18 @@ export default function Home() {
                 aspectRatio={aspectRatio}
                 quality={quality}
                 variations={variations}
+                strength={strength}
+                guidanceScale={guidanceScale}
+                inferenceSteps={inferenceSteps}
                 onStyleChange={setStyle}
                 onLightingChange={setLighting}
                 onAngleChange={setAngle}
                 onAspectRatioChange={setAspectRatio}
                 onQualityChange={setQuality}
                 onVariationsChange={setVariations}
+                onStrengthChange={setStrength}
+                onGuidanceScaleChange={setGuidanceScale}
+                onInferenceStepsChange={setInferenceSteps}
               />
             </div>
 
