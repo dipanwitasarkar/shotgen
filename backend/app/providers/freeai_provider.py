@@ -21,11 +21,11 @@ class FreeAIProvider(AIProvider):
     }
     
     def __init__(self, api_key: str = ""):
-        self.api_key = api_key  # Optional - works without key (6k tokens/day)
+        self.api_key = api_key.strip() if api_key else ""  # Remove whitespace
         self.base_url = "https://api.free.ai/v1"
         headers = {}
-        if api_key and api_key != "no-key-needed":
-            headers["Authorization"] = f"Bearer {api_key}"
+        if self.api_key and self.api_key != "no-key-needed":
+            headers["Authorization"] = f"Bearer {self.api_key}"
         self.client = httpx.AsyncClient(
             headers=headers,
             timeout=120.0,

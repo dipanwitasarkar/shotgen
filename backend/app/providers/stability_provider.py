@@ -25,7 +25,7 @@ class StabilityProvider(AIProvider):
     }
     
     def __init__(self, api_key: str):
-        self.api_key = api_key
+        self.api_key = api_key.strip() if api_key else ""
         self.default_model = "sd3-turbo"
     
     @property
