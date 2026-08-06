@@ -107,27 +107,15 @@ const PROVIDERS: Provider[] = [
   },
   {
     id: 'replicate',
-    name: 'Replicate',
-    description: 'Easy to use, pay-per-use pricing',
+    name: 'Replicate (Paid)',
+    description: 'Pay-per-use pricing',
     apiKeyLabel: 'API Token',
     keyUrl: 'https://replicate.com/account/api-tokens',
     models: [
-      { id: 'sdxl', name: 'Stable Diffusion XL', description: 'Best quality, slower' },
-      { id: 'sdxl-lightning', name: 'SDXL Lightning', description: 'Fast, good quality' },
-      { id: 'flux-schnell', name: 'Flux Schnell', description: 'Very fast, free tier' },
-      { id: 'flux-dev', name: 'Flux Dev', description: 'High quality, slower' },
-    ],
-  },
-  {
-    id: 'stability',
-    name: 'Stability AI',
-    description: 'Direct from Stability, competitive pricing',
-    apiKeyLabel: 'API Key',
-    keyUrl: 'https://platform.stability.ai/account/keys',
-    models: [
-      { id: 'sd3', name: 'Stable Diffusion 3', description: 'Latest model' },
-      { id: 'sdxl-1.0', name: 'SDXL 1.0', description: 'Production ready' },
-      { id: 'sd-turbo', name: 'SD Turbo', description: 'Ultra fast' },
+      { id: 'sdxl', name: 'Stable Diffusion XL', description: 'IMG2IMG - Pay per use' },
+      { id: 'sdxl-lightning', name: 'SDXL Lightning', description: 'IMG2IMG - Fast' },
+      { id: 'flux-schnell', name: 'Flux Schnell', description: 'IMG2IMG - Very fast' },
+      { id: 'flux-dev', name: 'Flux Dev', description: 'IMG2IMG - High quality' },
     ],
   },
 ]
