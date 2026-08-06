@@ -81,6 +81,9 @@ class FreeAIProvider(AIProvider):
                 print(f"[Free.ai] IMG2IMG generation:")
                 print(f"  Prompt: {prompt[:100]}...")
                 print(f"  Strength: {img2img_strength}")
+                print(f"  Image sent: YES (base64 length: {len(img_b64)} chars)")
+                print(f"  Product image size: {request.product_image.size}")
+                print(f"  Product image mode: {request.product_image.mode}")
                 
                 response = await self.client.post(
                     f"{self.base_url}/image/generate/",
