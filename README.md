@@ -10,8 +10,6 @@ Watch ShotGen in action:
 
 ![ShotGen Demo](shotgen_demo.gif)
 
-**[📹 Watch Full Video (MP4)](shotgen_final.mp4)**
-
 <details>
 <summary><strong>⚠️ Important Note About This Demo</strong></summary>
 
