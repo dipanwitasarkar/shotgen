@@ -43,41 +43,28 @@ const PROVIDERS: Provider[] = [
     ],
   },
   {
-    id: 'pollinations',
-    name: 'Pollinations.ai (Text-to-Image only)',
-    description: 'FREE but NO img2img - generic products only',
-    apiKeyLabel: 'No API Key Needed',
-    keyUrl: '',
-    models: [
-      { id: 'flux', name: 'FLUX', description: 'Text-to-image only' },
-      { id: 'flux-realism', name: 'FLUX Realism', description: 'Text-to-image only' },
-      { id: 'flux-anime', name: 'FLUX Anime', description: 'Text-to-image only' },
-      { id: 'turbo', name: 'Turbo', description: 'Text-to-image only' },
-    ],
-  },
-  {
     id: 'together',
-    name: 'Together AI ⭐ FREE',
-    description: 'Free 3 months unlimited, fast inference',
+    name: 'Together AI (IMG2IMG)',
+    description: 'Free 3 months unlimited - Image-to-image support',
     apiKeyLabel: 'API Key',
     keyUrl: 'https://api.together.ai/settings/api-keys',
     models: [
-      { id: 'flux-schnell-free', name: 'FLUX.1 Schnell (Free)', description: '⭐ FREE - 3 months unlimited' },
-      { id: 'flux-schnell', name: 'FLUX.1 Schnell', description: 'Fast, good quality' },
-      { id: 'flux-dev', name: 'FLUX.2 Dev', description: 'High quality' },
-      { id: 'flux-pro', name: 'FLUX.1.1 Pro', description: 'Best quality' },
+      { id: 'flux-schnell-free', name: 'FLUX.1 Schnell (Free)', description: 'IMG2IMG - 3 months unlimited' },
+      { id: 'flux-schnell', name: 'FLUX.1 Schnell', description: 'IMG2IMG - Fast' },
+      { id: 'flux-dev', name: 'FLUX.2 Dev', description: 'IMG2IMG - High quality' },
+      { id: 'flux-pro', name: 'FLUX.1.1 Pro', description: 'IMG2IMG - Best quality' },
     ],
   },
   {
     id: 'huggingface',
-    name: 'Hugging Face ⭐ FREE',
-    description: 'Free forever, all models free',
+    name: 'Hugging Face (IMG2IMG)',
+    description: 'Free forever - Image-to-image support',
     apiKeyLabel: 'API Token',
     keyUrl: 'https://huggingface.co/settings/tokens',
     models: [
-      { id: 'flux-schnell', name: 'FLUX.1 Schnell', description: 'Free - Fast' },
-      { id: 'sdxl', name: 'Stable Diffusion XL', description: 'Free - High quality' },
-      { id: 'sd-turbo', name: 'SDXL Turbo', description: 'Free - Ultra fast' },
+      { id: 'flux-schnell', name: 'FLUX.1 Schnell', description: 'IMG2IMG - Free' },
+      { id: 'sdxl', name: 'Stable Diffusion XL', description: 'IMG2IMG - Free' },
+      { id: 'sd-turbo', name: 'SDXL Turbo', description: 'IMG2IMG - Free' },
     ],
   },
   {
@@ -174,8 +161,8 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
   }
 
   const handleSave = async () => {
-    // Free.ai and Pollinations don't need API key
-    const keylessProviders = ['pollinations', 'freeai']
+    // Only Free.ai doesn't need API key
+    const keylessProviders = ['freeai']
     if (!keylessProviders.includes(provider) && !apiKey.trim()) {
       setError('API key is required')
       return
@@ -343,12 +330,12 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
           {/* Save Button */}
           <button
             onClick={handleSave}
-            disabled={!['pollinations', 'freeai'].includes(provider) && !apiKey.trim()}
+            disabled={provider !== 'freeai' && !apiKey.trim()}
             className={cn(
               'w-full py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2',
               saved
                 ? 'bg-green-500 text-white'
-                : (['pollinations', 'freeai'].includes(provider) || apiKey.trim())
+                : (provider === 'freeai' || apiKey.trim())
                   ? 'bg-brand-500 hover:bg-brand-600 text-white'
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed'
             )}

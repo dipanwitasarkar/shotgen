@@ -326,12 +326,6 @@ async def get_available_models():
                 {"id": "flux-schnell", "name": "FLUX Schnell", "description": "⭐ FREE IMG2IMG - Fast"},
                 {"id": "sd-turbo", "name": "SD Turbo", "description": "⭐ FREE IMG2IMG - Fastest"},
             ],
-            "pollinations": [
-                {"id": "flux", "name": "FLUX", "description": "Text-to-image only"},
-                {"id": "flux-realism", "name": "FLUX Realism", "description": "Text-to-image only"},
-                {"id": "flux-anime", "name": "FLUX Anime", "description": "Text-to-image only"},
-                {"id": "turbo", "name": "Turbo", "description": "Text-to-image only"},
-            ],
             "nvidia": [
                 {"id": "flux-schnell", "name": "FLUX.1 Schnell", "description": "Very fast, 4 steps"},
                 {"id": "flux-dev", "name": "FLUX.1 Dev", "description": "High quality, 20-50 steps"},

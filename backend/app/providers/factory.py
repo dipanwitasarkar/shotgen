@@ -9,22 +9,20 @@ from app.providers.nvidia_provider import NVIDIAProvider
 from app.providers.together_provider import TogetherProvider
 from app.providers.huggingface_provider import HuggingFaceProvider
 from app.providers.google_provider import GoogleProvider
-from app.providers.pollinations_provider import PollinationsProvider
 from app.providers.freeai_provider import FreeAIProvider
 
 
 class ProviderFactory:
-    """Factory for creating AI provider instances."""
+    """Factory for creating AI provider instances - IMAGE-TO-IMAGE ONLY."""
     
     _providers: dict[str, type[AIProvider]] = {
-        "freeai": FreeAIProvider,
-        "together": TogetherProvider,
-        "huggingface": HuggingFaceProvider,
-        "nvidia": NVIDIAProvider,
-        "google": GoogleProvider,
-        "pollinations": PollinationsProvider,
-        "replicate": ReplicateProvider,
-        "stability": StabilityProvider,
+        "freeai": FreeAIProvider,  # FREE img2img
+        "stability": StabilityProvider,  # Paid img2img
+        "replicate": ReplicateProvider,  # Paid img2img
+        "together": TogetherProvider,  # Paid img2img (verify)
+        "huggingface": HuggingFaceProvider,  # Free img2img (verify)
+        "nvidia": NVIDIAProvider,  # Paid img2img (verify)
+        "google": GoogleProvider,  # Paid img2img (verify)
     }
     
     @classmethod
@@ -65,7 +63,7 @@ class ProviderFactory:
                 key = settings.stability_api_key
         
         # Some providers don't need API keys
-        keyless_providers = ["pollinations", "freeai"]
+        keyless_providers = ["freeai"]
         
         if not key and name not in keyless_providers:
             raise ValueError(f"API key required for {name}. Configure in Settings panel.")
