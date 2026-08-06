@@ -10,7 +10,7 @@ import replicate
 import httpx
 
 from app.core.config import settings
-from app.providers.base import AIProvider, GenerationRequest, GenerationResult, build_img2img_prompt
+from app.providers.base import AIProvider, GenerationRequest, GenerationResult, build_img2img_prompt, build_background_prompt, composite_product_on_background
 
 
 class ReplicateProvider(AIProvider):

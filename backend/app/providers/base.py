@@ -35,6 +35,76 @@ class GenerationResult:
     cost_usd: float | None = None
 
 
+def composite_product_on_background(product_image: Image.Image, background_image: Image.Image, scale: float = 0.6) -> Image.Image:
+    """
+    Composite product onto background - the RIGHT way to do product photography.
+    
+    Args:
+        product_image: Product with transparent background (from background removal)
+        background_image: Generated scene background
+        scale: Product size as fraction of background (0.6 = 60%)
+    
+    Returns:
+        Final composited image with product on background
+    """
+    bg_width, bg_height = background_image.size
+    product_img = product_image.copy()
+    
+    # Calculate product size
+    product_width = int(bg_width * scale)
+    product_height = int(product_img.height * (product_width / product_img.width))
+    product_img = product_img.resize((product_width, product_height), Image.Resampling.LANCZOS)
+    
+    # Center the product
+    x = (bg_width - product_width) // 2
+    y = (bg_height - product_height) // 2
+    
+    # Composite (product has transparency from background removal)
+    final_img = background_image.copy()
+    final_img.paste(product_img, (x, y), product_img if product_img.mode == 'RGBA' else None)
+    
+    return final_img
+
+
+def build_background_prompt(request: GenerationRequest) -> str:
+    """
+    Build prompt for generating JUST the background scene (no product).
+    This is used for the composite approach.
+    """
+    prompt_parts = [
+        f"{request.scene_prompt}, empty scene, no objects, background only",
+    ]
+    
+    # Add style details
+    style_descriptors = {
+        "realistic": "photorealistic, highly detailed, professional photography",
+        "artistic": "artistic composition, creative styling, aesthetic",
+        "minimal": "minimalist, clean composition, simple background",
+        "lifestyle": "lifestyle photography, natural setting, authentic feel",
+        "editorial": "editorial style, magazine quality, sophisticated",
+        "cinematic": "cinematic lighting, dramatic composition, film-like quality",
+    }
+    if request.style in style_descriptors:
+        prompt_parts.append(style_descriptors[request.style])
+    
+    # Add lighting details
+    lighting_descriptors = {
+        "studio": "professional studio lighting, soft shadows, even illumination",
+        "natural": "natural daylight, window light, soft ambient lighting",
+        "dramatic": "dramatic lighting, high contrast, deep shadows",
+        "soft": "soft diffused lighting, gentle shadows, flattering light",
+        "golden_hour": "golden hour lighting, warm sunset glow, soft warm tones",
+        "neon": "neon lighting, vibrant colors, glowing accents",
+    }
+    if request.lighting in lighting_descriptors:
+        prompt_parts.append(lighting_descriptors[request.lighting])
+    
+    # Add quality boosters
+    prompt_parts.append("sharp focus, high resolution, professional quality, 8k uhd")
+    
+    return ", ".join(prompt_parts)
+
+
 def build_img2img_prompt(request: GenerationRequest) -> str:
     """
     Build a detailed, effective prompt for image-to-image generation.

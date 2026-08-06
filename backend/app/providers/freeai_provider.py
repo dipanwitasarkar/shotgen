@@ -8,7 +8,7 @@ import base64
 from PIL import Image
 import httpx
 
-from app.providers.base import AIProvider, GenerationRequest, GenerationResult, build_img2img_prompt
+from app.providers.base import AIProvider, GenerationRequest, GenerationResult, build_background_prompt, composite_product_on_background
 
 
 class FreeAIProvider(AIProvider):
@@ -59,11 +59,7 @@ class FreeAIProvider(AIProvider):
                 seed = request.seed + i if request.seed else None
                 
                 # APPROACH: Generate background, then composite product on top
-                # Step 1: Generate JUST the background scene (no product in prompt)
-                # Step 2: Composite the product image on top
-                
-                # Generate background scene WITHOUT the product
-                background_prompt = f"{request.scene_prompt}, {request.style} style, {request.lighting} lighting, {request.angle} angle, empty scene, no objects, background only, professional photography, 8k uhd"
+                background_prompt = build_background_prompt(request)
                 
                 payload = {
                     "prompt": background_prompt,
@@ -117,24 +113,8 @@ class FreeAIProvider(AIProvider):
                 
                 print(f"[Free.ai] Background generated, compositing product...")
                 
-                # Composite product onto background
-                # Resize product to fit nicely in scene (60-70% of image)
-                bg_width, bg_height = background_img.size
-                product_img = request.product_image.copy()
-                
-                # Calculate product size (60% of background)
-                scale = 0.6
-                product_width = int(bg_width * scale)
-                product_height = int(product_img.height * (product_width / product_img.width))
-                product_img = product_img.resize((product_width, product_height), Image.Resampling.LANCZOS)
-                
-                # Center the product
-                x = (bg_width - product_width) // 2
-                y = (bg_height - product_height) // 2
-                
-                # Composite (product has transparency from background removal)
-                final_img = background_img.copy()
-                final_img.paste(product_img, (x, y), product_img if product_img.mode == 'RGBA' else None)
+                # Use shared composite function
+                final_img = composite_product_on_background(request.product_image, background_img, scale=0.6)
                 
                 images.append(final_img)
                 seeds.append(seed or 0)

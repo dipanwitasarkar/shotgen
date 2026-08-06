@@ -8,7 +8,7 @@ import time
 from PIL import Image
 import httpx
 
-from app.providers.base import AIProvider, GenerationRequest, GenerationResult, build_img2img_prompt
+from app.providers.base import AIProvider, GenerationRequest, GenerationResult, build_img2img_prompt, build_background_prompt, composite_product_on_background
 
 
 class NVIDIAProvider(AIProvider):
