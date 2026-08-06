@@ -58,21 +58,19 @@ class FreeAIProvider(AIProvider):
             for i in range(request.num_variations):
                 seed = request.seed + i if request.seed else None
                 
-                # For img2img: strength controls how much to change
-                # Lower strength (0.3-0.5) = keep product, change background
-                # Higher strength (0.7-0.9) = transform everything (loses product)
-                # UI slider is 0-1, but we need to INVERT it for img2img
-                # UI: 0.85 (high) should mean "keep product, change background a lot"
-                # API: needs low strength to keep product
-                img2img_strength = 1.0 - request.strength  # Invert: UI high = API low
+                # APPROACH: Generate background, then composite product on top
+                # Step 1: Generate JUST the background scene (no product in prompt)
+                # Step 2: Composite the product image on top
+                
+                # Generate background scene WITHOUT the product
+                background_prompt = f"{request.scene_prompt}, {request.style} style, {request.lighting} lighting, {request.angle} angle, empty scene, no objects, background only, professional photography, 8k uhd"
                 
                 payload = {
-                    "prompt": f"{prompt}, product in center, keep product intact",
+                    "prompt": background_prompt,
                     "model": "sdxl",
-                    "image": f"data:image/png;base64,{img_b64}",  # Reference image
-                    "strength": img2img_strength,  # From UI slider (inverted)
-                    "guidance_scale": request.guidance_scale,  # From UI slider
-                    "num_inference_steps": request.inference_steps,  # From UI slider
+                    # NO image parameter - generate clean background
+                    "guidance_scale": request.guidance_scale,
+                    "num_inference_steps": request.inference_steps,
                 }
                 
                 if seed:
@@ -98,33 +96,49 @@ class FreeAIProvider(AIProvider):
                 result = response.json()
                 print(f"[Free.ai] Response keys: {result.keys()}")
                 
-                # Try OpenAI-compatible format first: {"data": [{"url": "..." or "b64_json": "..."}]}
+                # Get generated background
+                background_img = None
                 if "data" in result and len(result["data"]) > 0:
                     img_data = result["data"][0]
                     if "b64_json" in img_data:
                         img_bytes = base64.b64decode(img_data["b64_json"])
-                        img = Image.open(io.BytesIO(img_bytes))
-                        images.append(img)
-                        seeds.append(seed or 0)
-                        print(f"[Free.ai] Image from b64_json")
+                        background_img = Image.open(io.BytesIO(img_bytes))
                     elif "url" in img_data:
-                        print(f"[Free.ai] Downloading from: {img_data['url']}")
                         img_response = await self.client.get(img_data["url"])
-                        img = Image.open(io.BytesIO(img_response.content))
-                        images.append(img)
-                        seeds.append(seed or 0)
-                # Fallback to direct URL fields
+                        background_img = Image.open(io.BytesIO(img_response.content))
                 else:
                     image_url = result.get("url") or result.get("image_url") or result.get("output_url")
                     if image_url:
-                        print(f"[Free.ai] Downloading from: {image_url}")
                         img_response = await self.client.get(image_url)
-                        img = Image.open(io.BytesIO(img_response.content))
-                        images.append(img)
-                        seeds.append(seed or 0)
-                    else:
-                        print(f"[Free.ai] No image in response: {result}")
-                        raise Exception("Free.ai: No image in response")
+                        background_img = Image.open(io.BytesIO(img_response.content))
+                
+                if not background_img:
+                    raise Exception("Free.ai: No background generated")
+                
+                print(f"[Free.ai] Background generated, compositing product...")
+                
+                # Composite product onto background
+                # Resize product to fit nicely in scene (60-70% of image)
+                bg_width, bg_height = background_img.size
+                product_img = request.product_image.copy()
+                
+                # Calculate product size (60% of background)
+                scale = 0.6
+                product_width = int(bg_width * scale)
+                product_height = int(product_img.height * (product_width / product_img.width))
+                product_img = product_img.resize((product_width, product_height), Image.Resampling.LANCZOS)
+                
+                # Center the product
+                x = (bg_width - product_width) // 2
+                y = (bg_height - product_height) // 2
+                
+                # Composite (product has transparency from background removal)
+                final_img = background_img.copy()
+                final_img.paste(product_img, (x, y), product_img if product_img.mode == 'RGBA' else None)
+                
+                images.append(final_img)
+                seeds.append(seed or 0)
+                print(f"[Free.ai] Product composited successfully")
             
             generation_time_ms = int((time.time() - start_time) * 1000)
             
