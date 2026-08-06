@@ -118,6 +118,10 @@ async def generate_product_shot(
     strength: Annotated[float, Form(description="IMG2IMG transformation strength", ge=0.0, le=1.0)] = 0.85,
     guidanceScale: Annotated[float, Form(description="Prompt guidance scale", ge=1.0, le=20.0)] = 7.5,
     inferenceSteps: Annotated[int, Form(description="Number of inference steps", ge=10, le=50)] = 30,
+    # New features
+    useInpainting: Annotated[bool, Form(description="Use inpainting to preserve product")] = True,
+    useControlNet: Annotated[bool, Form(description="Use ControlNet for structure preservation")] = False,
+    customBackground: Annotated[UploadFile | None, File(description="Custom background image")] = None,
     service: ImageGenerationService = Depends(get_image_generation_service),
 ):
     """
@@ -125,8 +129,9 @@ async def generate_product_shot(
     
     Upload a product image and get back studio-quality lifestyle shots.
     """
-    # Load image
+    # Load images
     product_image = load_image_from_upload(image)
+    custom_bg = load_image_from_upload(customBackground) if customBackground else None
     
     # Create request
     request = ProductShotRequest(
@@ -143,6 +148,9 @@ async def generate_product_shot(
         strength=strength,
         guidance_scale=guidanceScale,
         inference_steps=inferenceSteps,
+        use_inpainting=useInpainting,
+        use_controlnet=useControlNet,
+        custom_background=custom_bg,
     )
     
     # Generate

@@ -27,6 +27,10 @@ class ProductShotRequest:
     strength: float = 0.85
     guidance_scale: float = 7.5
     inference_steps: int = 30
+    # New features
+    use_inpainting: bool = True  # Preserve product with mask
+    use_controlnet: bool = False  # Preserve structure
+    custom_background: Image.Image | None = None  # User-uploaded background
 
 
 @dataclass
@@ -144,6 +148,10 @@ class ImageGenerationService:
             strength=request.strength,
             guidance_scale=request.guidance_scale,
             inference_steps=request.inference_steps,
+            # New features
+            use_inpainting=request.use_inpainting,
+            use_controlnet=request.use_controlnet,
+            custom_background=request.custom_background,
         )
         
         result = await self.ai_provider.generate(gen_request)

@@ -5,6 +5,7 @@ import { Sparkles, Zap, Camera, AlertTriangle, AlertCircle } from 'lucide-react'
 import { ImageUploader } from '@/components/ImageUploader'
 import { SceneSelector } from '@/components/SceneSelector'
 import { GenerationSettings, ASPECT_RATIO_DIMENSIONS } from '@/components/GenerationSettings'
+import { AdvancedControls } from '@/components/AdvancedControls'
 import { ResultGallery } from '@/components/ResultGallery'
 import { SettingsPanel, AppSettings } from '@/components/SettingsPanel'
 import { PromptPreview } from '@/components/PromptPreview'
@@ -192,6 +193,20 @@ export default function Home() {
                 onStrengthChange={setStrength}
                 onGuidanceScaleChange={setGuidanceScale}
                 onInferenceStepsChange={setInferenceSteps}
+              />
+            </div>
+
+            {/* Advanced Controls */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+              <AdvancedControls
+                resolution={resolution}
+                useInpainting={useInpainting}
+                useControlNet={useControlNet}
+                customBackground={customBackground}
+                onResolutionChange={setResolution}
+                onUseInpaintingChange={setUseInpainting}
+                onUseControlNetChange={setUseControlNet}
+                onCustomBackgroundChange={setCustomBackground}
               />
             </div>
 

@@ -10,7 +10,7 @@ import replicate
 import httpx
 
 from app.core.config import settings
-from app.providers.base import AIProvider, GenerationRequest, GenerationResult, build_img2img_prompt
+from app.providers.base import AIProvider, GenerationRequest, GenerationResult, build_img2img_prompt, generate_mask_from_alpha
 
 
 class ReplicateProvider(AIProvider):
@@ -59,10 +59,38 @@ class ReplicateProvider(AIProvider):
         for i in range(request.num_variations):
             seed = request.seed + i if request.seed else None
             
-            # Use IMAGE-TO-IMAGE with product as input
-            output = self.client.run(
-                model_id,
-                input={
+            # Choose model based on mode
+            if request.use_controlnet:
+                # Use ControlNet model for structure preservation
+                model_id = "jagilley/controlnet-canny:aff48af9c68d162388d230a2ab003f68d2638d88307bdaf1c2f1ac95079c9613"
+                control_image = self._image_to_base64(request.product_image)
+                input_params = {
+                    "prompt": prompt,
+                    "image": f"data:image/png;base64,{control_image}",  # Control image
+                    "num_outputs": 1,
+                    "guidance_scale": request.guidance_scale,
+                    "num_inference_steps": request.inference_steps,
+                }
+                print(f"[Replicate] CONTROLNET mode - structure preserved")
+            elif request.use_inpainting:
+                # Use inpainting model for background replacement
+                model_id = "stability-ai/stable-diffusion-inpainting:95b7223104132402a9ae91cc677285bc5eb997834bd2349fa486f53910fd68b3"
+                mask = request.product_mask or generate_mask_from_alpha(request.product_image)
+                mask_base64 = self._image_to_base64(mask)
+                input_params = {
+                    "prompt": prompt,
+                    "image": f"data:image/png;base64,{product_base64}",
+                    "mask": f"data:image/png;base64,{mask_base64}",  # Mask: white=change, black=keep
+                    "width": request.output_width,
+                    "height": request.output_height,
+                    "num_outputs": 1,
+                    "guidance_scale": request.guidance_scale,
+                    "num_inference_steps": request.inference_steps,
+                }
+                print(f"[Replicate] INPAINTING mode - product preserved")
+            else:
+                # Standard img2img
+                input_params = {
                     "prompt": prompt,
                     "image": f"data:image/png;base64,{product_base64}",  # INPUT IMAGE
                     "width": request.output_width,
@@ -73,7 +101,13 @@ class ReplicateProvider(AIProvider):
                     "num_inference_steps": request.inference_steps,  # From UI slider
                     "seed": seed,
                 }
-            )
+                print(f"[Replicate] IMG2IMG mode")
+            
+            if seed:
+                input_params["seed"] = seed
+            
+            # Run generation
+            output = self.client.run(model_id, input=input_params)
             
             # Download and convert output
             if output:

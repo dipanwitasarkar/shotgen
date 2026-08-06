@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.api.routes import router as api_router
+from app.api.public import router as public_router
 
 
 @asynccontextmanager
@@ -38,6 +39,7 @@ app.add_middleware(
 
 # Include API routes
 app.include_router(api_router, prefix=settings.api_v1_prefix)
+app.include_router(public_router, prefix=settings.api_v1_prefix)
 
 
 @app.get("/")

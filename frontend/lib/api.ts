@@ -15,6 +15,12 @@ export interface GenerationParams {
   variations?: number
   removeBackground?: boolean
   seed?: number
+  strength?: number
+  guidanceScale?: number
+  inferenceSteps?: number
+  useInpainting?: boolean
+  useControlNet?: boolean
+  customBackground?: File | null
 }
 
 export interface GenerationResult {
@@ -69,6 +75,12 @@ class APIClient {
       formData.append('remove_background', params.removeBackground.toString())
     }
     if (params.seed) formData.append('seed', params.seed.toString())
+    if (params.strength !== undefined) formData.append('strength', params.strength.toString())
+    if (params.guidanceScale !== undefined) formData.append('guidanceScale', params.guidanceScale.toString())
+    if (params.inferenceSteps !== undefined) formData.append('inferenceSteps', params.inferenceSteps.toString())
+    if (params.useInpainting !== undefined) formData.append('useInpainting', params.useInpainting.toString())
+    if (params.useControlNet !== undefined) formData.append('useControlNet', params.useControlNet.toString())
+    if (params.customBackground) formData.append('customBackground', params.customBackground)
 
     const response = await fetch(`${this.baseUrl}/generate`, {
       method: 'POST',
