@@ -9,7 +9,7 @@ from PIL import Image
 import httpx
 
 from app.core.config import settings
-from app.providers.base import AIProvider, GenerationRequest, GenerationResult, build_img2img_prompt
+from app.providers.base import AIProvider, GenerationRequest, GenerationResult, build_img2img_prompt, generate_mask_from_alpha, invert_mask
 
 
 class StabilityProvider(AIProvider):
@@ -54,20 +54,53 @@ class StabilityProvider(AIProvider):
                 request.product_image.save(img_byte_arr, format='PNG')
                 img_byte_arr.seek(0)
                 
-                # Use IMAGE-TO-IMAGE endpoint with product as input
+                # Prepare files dict
+                files_dict = {
+                    "image": ("product.png", img_byte_arr, "image/png"),
+                }
+                
+                # CONTROLNET MODE: Preserve structure while changing style
+                if request.use_controlnet:
+                    # Stability AI ControlNet endpoint
+                    endpoint = f"{self.API_BASE}/v2beta/stable-image/control/structure"
+                    mode = "control"
+                    # Add control image (same as product for structure preservation)
+                    control_byte_arr = io.BytesIO()
+                    request.product_image.save(control_byte_arr, format='PNG')
+                    control_byte_arr.seek(0)
+                    files_dict["control_image"] = ("control.png", control_byte_arr, "image/png")
+                    print(f"[Stability] CONTROLNET mode - structure preserved, style changed")
+                
+                # INPAINTING MODE: Add mask to preserve product
+                elif request.use_inpainting:
+                    # Generate mask from product alpha channel
+                    mask = request.product_mask or generate_mask_from_alpha(request.product_image)
+                    # Stability expects: Black = keep, White = change (opposite of our convention)
+                    mask_inverted = invert_mask(mask)
+                    mask_byte_arr = io.BytesIO()
+                    mask_inverted.save(mask_byte_arr, format='PNG')
+                    mask_byte_arr.seek(0)
+                    files_dict["mask"] = ("mask.png", mask_byte_arr, "image/png")
+                    mode = "inpainting"
+                    print(f"[Stability] INPAINTING mode - product will be preserved")
+                else:
+                    mode = "image-to-image"
+                    print(f"[Stability] IMG2IMG mode - entire image will transform")
+                
+                # Use appropriate endpoint
+                endpoint = f"{self.API_BASE}/v2beta/stable-image/generate/sd3"
+                
                 response = await client.post(
-                    f"{self.API_BASE}/v2beta/stable-image/generate/sd3",
+                    endpoint,
                     headers={
                         "Authorization": f"Bearer {self.api_key}",
                         "Accept": "image/*",
                     },
-                    files={
-                        "image": ("product.png", img_byte_arr, "image/png"),
-                    },
+                    files=files_dict,
                     data={
                         "prompt": prompt,
                         "model": self.MODELS[self.default_model],
-                        "mode": "image-to-image",  # IMAGE-TO-IMAGE mode
+                        "mode": mode,
                         "output_format": "png",
                         "strength": request.strength,  # From UI slider
                         "cfg_scale": request.guidance_scale,  # From UI slider (Stability calls it cfg_scale)

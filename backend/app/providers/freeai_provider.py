@@ -12,7 +12,16 @@ from app.providers.base import AIProvider, GenerationRequest, GenerationResult, 
 
 
 class FreeAIProvider(AIProvider):
-    """Free.ai - FREE img2img provider."""
+    """
+    Free.ai - FREE provider.
+    
+    ⚠️ WARNING: Free.ai's /image/generate/ endpoint does NOT properly support img2img.
+    It ignores the image parameter and generates from text only, making it unsuitable
+    for product photography where we need to preserve the product and change the background.
+    
+    This provider is kept for text-to-image generation only.
+    For proper img2img, use: Stability AI, Replicate, Together AI, or NVIDIA.
+    """
     
     MODELS = {
         "sdxl": "sdxl",

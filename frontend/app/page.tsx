@@ -13,17 +13,21 @@ import { api, GenerationResult } from '@/lib/api'
 export default function Home() {
   // State
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
+  const [customBackground, setCustomBackground] = useState<File | null>(null)
   const [scene, setScene] = useState('white_studio')
   const [customPrompt, setCustomPrompt] = useState('')
   const [style, setStyle] = useState('realistic')
   const [lighting, setLighting] = useState('studio')
   const [angle, setAngle] = useState('front')
   const [aspectRatio, setAspectRatio] = useState('1:1')
+  const [resolution, setResolution] = useState<'1024' | '2048' | '4096'>('1024')
   const [quality, setQuality] = useState(50)
   const [variations, setVariations] = useState(2)
   const [strength, setStrength] = useState(0.5)  // 0.5 = balanced (keep product, change scene)
   const [guidanceScale, setGuidanceScale] = useState(7.5)
   const [inferenceSteps, setInferenceSteps] = useState(30)
+  const [useInpainting, setUseInpainting] = useState(true)  // Preserve product
+  const [useControlNet, setUseControlNet] = useState(false)  // Structure preservation
   
   const [isGenerating, setIsGenerating] = useState(false)
   const [result, setResult] = useState<GenerationResult | null>(null)
@@ -48,8 +52,13 @@ export default function Home() {
     setError(null)
     setResult(null)
 
-    // Get dimensions from aspect ratio
-    const dimensions = ASPECT_RATIO_DIMENSIONS[aspectRatio] || { width: 1024, height: 1024 }
+    // Get dimensions from resolution setting
+    const resolutionNum = parseInt(resolution)
+    const dimensions = ASPECT_RATIO_DIMENSIONS[aspectRatio] || { width: resolutionNum, height: resolutionNum }
+    // Scale dimensions to match resolution
+    const scaleFactor = resolutionNum / 1024
+    const width = Math.round(dimensions.width * scaleFactor)
+    const height = Math.round(dimensions.height * scaleFactor)
     
     // Use custom prompt if provided, otherwise use scene template
     const sceneToUse = customPrompt.trim() || scene
@@ -60,13 +69,16 @@ export default function Home() {
         style,
         lighting,
         angle,
-        width: dimensions.width,
-        height: dimensions.height,
+        width,
+        height,
         variations,
         removeBackground: true,
         strength,
         guidanceScale,
         inferenceSteps,
+        useInpainting,
+        useControlNet,
+        customBackground,
       })
       setResult(generationResult)
     } catch (err) {

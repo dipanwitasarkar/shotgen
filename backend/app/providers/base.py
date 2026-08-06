@@ -4,7 +4,8 @@ All providers must implement this interface.
 """
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from PIL import Image
+from PIL import Image, ImageOps
+import numpy as np
 
 
 @dataclass
@@ -22,6 +23,14 @@ class GenerationRequest:
     strength: float = 0.85  # IMG2IMG transformation strength (0-1)
     guidance_scale: float = 7.5  # How closely to follow prompt (1-20)
     inference_steps: int = 30  # Quality steps (10-50)
+    # Inpainting mode
+    use_inpainting: bool = True  # Use inpainting (preserve product) vs img2img (transform all)
+    product_mask: Image.Image | None = None  # Mask of product area (auto-generated from alpha)
+    # Custom background
+    custom_background: Image.Image | None = None  # User-uploaded background image
+    # ControlNet
+    use_controlnet: bool = False  # Use ControlNet to preserve structure
+    controlnet_type: str = "canny"  # canny, depth, pose, etc.
 
 
 @dataclass
@@ -33,6 +42,40 @@ class GenerationResult:
     model: str
     generation_time_ms: int
     cost_usd: float | None = None
+
+
+def generate_mask_from_alpha(product_image: Image.Image) -> Image.Image:
+    """
+    Generate a binary mask from product image alpha channel.
+    White = product area (keep), Black = background area (change).
+    
+    Args:
+        product_image: Product with transparent background (RGBA)
+    
+    Returns:
+        Binary mask image (L mode, 0-255)
+    """
+    if product_image.mode != 'RGBA':
+        # If no alpha, create mask from non-white pixels
+        gray = product_image.convert('L')
+        mask = Image.eval(gray, lambda x: 255 if x < 250 else 0)
+        return mask
+    
+    # Extract alpha channel
+    alpha = product_image.split()[3]
+    
+    # Threshold to binary (0 or 255)
+    mask = Image.eval(alpha, lambda x: 255 if x > 10 else 0)
+    
+    return mask
+
+
+def invert_mask(mask: Image.Image) -> Image.Image:
+    """
+    Invert mask: White becomes Black, Black becomes White.
+    Used when API expects opposite convention.
+    """
+    return ImageOps.invert(mask)
 
 
 def composite_product_on_background(product_image: Image.Image, background_image: Image.Image, scale: float = 0.6) -> Image.Image:
