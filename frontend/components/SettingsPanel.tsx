@@ -31,15 +31,27 @@ interface Model {
 
 const PROVIDERS: Provider[] = [
   {
+    id: 'stability',
+    name: 'Stability AI ⭐ WORKS NOW',
+    description: 'You have API key - IMG2IMG ready!',
+    apiKeyLabel: 'API Key',
+    keyUrl: 'https://platform.stability.ai/account/keys',
+    models: [
+      { id: 'sd3-turbo', name: 'SD3 Turbo', description: '⭐ IMG2IMG - Fastest, cheapest' },
+      { id: 'sd3', name: 'SD3', description: 'IMG2IMG - High quality' },
+      { id: 'sdxl', name: 'SDXL 1.0', description: 'IMG2IMG - Classic' },
+    ],
+  },
+  {
     id: 'freeai',
-    name: 'Free.ai ⭐ FREE IMG2IMG',
-    description: '6k tokens/day NO signup! TRUE image-to-image!',
-    apiKeyLabel: 'API Key (Optional - 30k/day with free account)',
+    name: 'Free.ai (Requires Signup)',
+    description: 'Free but needs account - 30k tokens/day',
+    apiKeyLabel: 'API Key (Get from free.ai)',
     keyUrl: 'https://free.ai',
     models: [
-      { id: 'sdxl', name: 'SDXL', description: '⭐ FREE IMG2IMG - Your product in scenes!' },
-      { id: 'flux-schnell', name: 'FLUX Schnell', description: '⭐ FREE IMG2IMG - Fast' },
-      { id: 'sd-turbo', name: 'SD Turbo', description: '⭐ FREE IMG2IMG - Fastest' },
+      { id: 'sdxl', name: 'SDXL', description: 'IMG2IMG - Free with signup' },
+      { id: 'flux-schnell', name: 'FLUX Schnell', description: 'IMG2IMG - Free with signup' },
+      { id: 'sd-turbo', name: 'SD Turbo', description: 'IMG2IMG - Free with signup' },
     ],
   },
   {
@@ -161,14 +173,13 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
   }
 
   const handleSave = async () => {
-    // Only Free.ai doesn't need API key
-    const keylessProviders = ['freeai']
-    if (!keylessProviders.includes(provider) && !apiKey.trim()) {
+    // All providers need API key now
+    if (!apiKey.trim()) {
       setError('API key is required')
       return
     }
 
-    const settings: AppSettings = { provider, model, apiKey: apiKey || 'no-key-needed' }
+    const settings: AppSettings = { provider, model, apiKey }
     
     // Save to localStorage
     localStorage.setItem('shotgen-settings', JSON.stringify(settings))
@@ -330,12 +341,12 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
           {/* Save Button */}
           <button
             onClick={handleSave}
-            disabled={provider !== 'freeai' && !apiKey.trim()}
+            disabled={!apiKey.trim()}
             className={cn(
               'w-full py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2',
               saved
                 ? 'bg-green-500 text-white'
-                : (provider === 'freeai' || apiKey.trim())
+                : apiKey.trim()
                   ? 'bg-brand-500 hover:bg-brand-600 text-white'
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed'
             )}
