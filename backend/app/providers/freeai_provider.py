@@ -58,31 +58,27 @@ class FreeAIProvider(AIProvider):
             for i in range(request.num_variations):
                 seed = request.seed + i if request.seed else None
                 
-                # Use multipart form data for image upload
-                files = {
-                    "image": ("product.png", io.BytesIO(base64.b64decode(img_b64)), "image/png")
-                }
-                
-                data = {
+                # Use JSON payload with base64 image for img2img
+                payload = {
                     "prompt": prompt,
                     "model": "sdxl",
+                    "image": f"data:image/png;base64,{img_b64}",  # Reference image
                     "strength": request.strength,  # From UI slider
                     "guidance_scale": request.guidance_scale,  # From UI slider
                     "num_inference_steps": request.inference_steps,  # From UI slider
                 }
                 
                 if seed:
-                    data["seed"] = seed
+                    payload["seed"] = seed
                 
                 print(f"[Free.ai] IMG2IMG request:")
-                print(f"  Model: {data['model']}")
+                print(f"  Model: {payload['model']}")
                 print(f"  Prompt: {prompt}")
-                print(f"  Strength: {data['strength']}")
+                print(f"  Strength: {payload['strength']}")
                 
                 response = await self.client.post(
-                    f"{self.base_url}/image/edit/",  # img2img endpoint
-                    files=files,
-                    data=data
+                    f"{self.base_url}/images/generations",  # Standard img2img endpoint
+                    json=payload
                 )
                 
                 print(f"[Free.ai] Response status: {response.status_code}")
@@ -95,20 +91,33 @@ class FreeAIProvider(AIProvider):
                 result = response.json()
                 print(f"[Free.ai] Response keys: {result.keys()}")
                 
-                # Free.ai returns: {"url": "...", "image_url": "...", "output_url": "..."}
-                # NOT the OpenAI format with "data" array
-                image_url = result.get("url") or result.get("image_url") or result.get("output_url")
-                
-                if image_url:
-                    print(f"[Free.ai] Downloading image from: {image_url}")
-                    img_response = await self.client.get(image_url)
-                    img = Image.open(io.BytesIO(img_response.content))
-                    images.append(img)
-                    seeds.append(seed or 0)
-                    print(f"[Free.ai] Image downloaded successfully")
+                # Try OpenAI-compatible format first: {"data": [{"url": "..." or "b64_json": "..."}]}
+                if "data" in result and len(result["data"]) > 0:
+                    img_data = result["data"][0]
+                    if "b64_json" in img_data:
+                        img_bytes = base64.b64decode(img_data["b64_json"])
+                        img = Image.open(io.BytesIO(img_bytes))
+                        images.append(img)
+                        seeds.append(seed or 0)
+                        print(f"[Free.ai] Image from b64_json")
+                    elif "url" in img_data:
+                        print(f"[Free.ai] Downloading from: {img_data['url']}")
+                        img_response = await self.client.get(img_data["url"])
+                        img = Image.open(io.BytesIO(img_response.content))
+                        images.append(img)
+                        seeds.append(seed or 0)
+                # Fallback to direct URL fields
                 else:
-                    print(f"[Free.ai] No image URL in response: {result}")
-                    raise Exception("Free.ai: No image URL in response")
+                    image_url = result.get("url") or result.get("image_url") or result.get("output_url")
+                    if image_url:
+                        print(f"[Free.ai] Downloading from: {image_url}")
+                        img_response = await self.client.get(image_url)
+                        img = Image.open(io.BytesIO(img_response.content))
+                        images.append(img)
+                        seeds.append(seed or 0)
+                    else:
+                        print(f"[Free.ai] No image in response: {result}")
+                        raise Exception("Free.ai: No image in response")
             
             generation_time_ms = int((time.time() - start_time) * 1000)
             
