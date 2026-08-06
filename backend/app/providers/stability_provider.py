@@ -9,7 +9,7 @@ from PIL import Image
 import httpx
 
 from app.core.config import settings
-from app.providers.base import AIProvider, GenerationRequest, GenerationResult
+from app.providers.base import AIProvider, GenerationRequest, GenerationResult, build_img2img_prompt
 
 
 class StabilityProvider(AIProvider):
@@ -121,9 +121,7 @@ class StabilityProvider(AIProvider):
     
     def _build_prompt(self, request: GenerationRequest) -> str:
         """Build prompt for Stability AI."""
-        return f"""Professional product photography of a product, {request.scene_prompt},
-        {request.style} style, {request.lighting} lighting, {request.angle} angle,
-        commercial photography, high resolution, sharp details, studio quality"""
+        return build_img2img_prompt(request)
     
     def _get_aspect_ratio(self, request: GenerationRequest) -> str:
         """Get aspect ratio string from dimensions."""

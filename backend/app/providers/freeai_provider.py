@@ -8,7 +8,7 @@ import base64
 from PIL import Image
 import httpx
 
-from app.providers.base import AIProvider, GenerationRequest, GenerationResult
+from app.providers.base import AIProvider, GenerationRequest, GenerationResult, build_img2img_prompt
 
 
 class FreeAIProvider(AIProvider):
@@ -137,8 +137,7 @@ class FreeAIProvider(AIProvider):
     
     def _build_prompt(self, request: GenerationRequest) -> str:
         """Build prompt for Free.ai img2img."""
-        # Since we're using img2img, just describe the scene transformation
-        return f"transform into {request.scene_prompt}, {request.style} style, {request.lighting} lighting"
+        return build_img2img_prompt(request)
     
     def estimate_cost(self, request: GenerationRequest) -> float:
         """Completely FREE! 6000 tokens/day anonymous, 30000/day with free account."""

@@ -7,7 +7,7 @@ import time
 from PIL import Image
 import httpx
 
-from app.providers.base import AIProvider, GenerationRequest, GenerationResult
+from app.providers.base import AIProvider, GenerationRequest, GenerationResult, build_img2img_prompt
 
 
 class TogetherProvider(AIProvider):
@@ -103,16 +103,9 @@ class TogetherProvider(AIProvider):
             raise Exception(f"Together AI generation failed: {str(e)}")
     
     def _build_prompt(self, request: GenerationRequest) -> str:
-        """Build prompt for Together AI."""
-        parts = [
-            request.scene_prompt,
-            f"{request.style} style",
-            f"{request.lighting} lighting",
-            f"{request.angle} angle view",
-            "professional product photography",
-        ]
-        return ", ".join(parts)
-    
+        """Build prompt using shared img2img prompt builder."""
+        return build_img2img_prompt(request)
+
     def estimate_cost(self, request: GenerationRequest) -> float:
         """Estimate cost - free tier available."""
         return 0.0  # Free tier for schnell-free

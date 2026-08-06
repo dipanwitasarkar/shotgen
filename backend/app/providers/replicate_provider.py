@@ -10,7 +10,7 @@ import replicate
 import httpx
 
 from app.core.config import settings
-from app.providers.base import AIProvider, GenerationRequest, GenerationResult
+from app.providers.base import AIProvider, GenerationRequest, GenerationResult, build_img2img_prompt
 
 
 class ReplicateProvider(AIProvider):
@@ -114,23 +114,9 @@ class ReplicateProvider(AIProvider):
         return per_image * request.num_variations
     
     def _build_prompt(self, request: GenerationRequest) -> str:
-        """Build an optimized prompt for product photography."""
-        base_prompt = f"""Professional product photography, {request.scene_prompt}, 
-        {request.style} style, {request.lighting} lighting, {request.angle} angle view,
-        high-end commercial photography, sharp focus, high detail, 
-        clean composition, professional studio quality"""
-        
-        # Add style-specific enhancements
-        style_additions = {
-            "realistic": "photorealistic, 8k resolution, RAW photo",
-            "artistic": "artistic composition, creative lighting, editorial style",
-            "minimal": "minimalist, clean background, simple elegant",
-            "lifestyle": "lifestyle photography, natural setting, authentic feel",
-        }
-        
-        addition = style_additions.get(request.style, "")
-        return f"{base_prompt}, {addition}"
-    
+        """Build prompt using shared img2img prompt builder."""
+        return build_img2img_prompt(request)
+
     def _image_to_base64(self, image: Image.Image) -> str:
         """Convert PIL Image to base64 string."""
         buffer = io.BytesIO()

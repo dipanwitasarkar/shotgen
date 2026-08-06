@@ -32,7 +32,68 @@ class GenerationResult:
     provider: str
     model: str
     generation_time_ms: int
-    cost_usd: float | None = None
+
+
+def build_img2img_prompt(request: GenerationRequest) -> str:
+    """
+    Build a detailed, effective prompt for image-to-image generation.
+    Works for all AI models (SDXL, FLUX, SD3, etc.)
+    """
+    # Start with the main scene
+    prompt_parts = [
+        f"product photography of the object in {request.scene_prompt}",
+    ]
+    
+    # Add style details
+    style_descriptors = {
+        "realistic": "photorealistic, highly detailed, professional photography",
+        "artistic": "artistic composition, creative styling, aesthetic",
+        "minimal": "minimalist, clean composition, simple background",
+        "lifestyle": "lifestyle photography, natural setting, authentic feel",
+        "editorial": "editorial style, magazine quality, sophisticated",
+        "cinematic": "cinematic lighting, dramatic composition, film-like quality",
+    }
+    if request.style in style_descriptors:
+        prompt_parts.append(style_descriptors[request.style])
+    else:
+        prompt_parts.append(f"{request.style} style")
+    
+    # Add lighting details
+    lighting_descriptors = {
+        "studio": "professional studio lighting, soft shadows, even illumination",
+        "natural": "natural daylight, window light, soft ambient lighting",
+        "dramatic": "dramatic lighting, high contrast, deep shadows",
+        "soft": "soft diffused lighting, gentle shadows, flattering light",
+        "golden_hour": "golden hour lighting, warm sunset glow, soft warm tones",
+        "neon": "neon lighting, vibrant colors, glowing accents",
+    }
+    if request.lighting in lighting_descriptors:
+        prompt_parts.append(lighting_descriptors[request.lighting])
+    else:
+        prompt_parts.append(f"{request.lighting} lighting")
+    
+    # Add camera angle details
+    angle_descriptors = {
+        "front": "straight-on view, centered composition",
+        "45-degree": "45-degree angle, dynamic perspective",
+        "top-down": "overhead view, flat lay composition",
+        "side": "side view, profile angle",
+        "low": "low angle shot, upward perspective",
+        "hero": "hero shot, dramatic angle, eye-catching composition",
+    }
+    if request.angle in angle_descriptors:
+        prompt_parts.append(angle_descriptors[request.angle])
+    else:
+        prompt_parts.append(f"{request.angle} angle")
+    
+    # Add quality boosters
+    prompt_parts.append("sharp focus, high resolution, professional quality")
+    prompt_parts.append("8k uhd, detailed textures")
+    
+    # Join all parts
+    full_prompt = ", ".join(prompt_parts)
+    
+    return full_prompt
 
 
 class AIProvider(ABC):

@@ -7,7 +7,7 @@ import time
 from PIL import Image
 import httpx
 
-from app.providers.base import AIProvider, GenerationRequest, GenerationResult
+from app.providers.base import AIProvider, GenerationRequest, GenerationResult, build_img2img_prompt
 
 
 class GoogleProvider(AIProvider):
@@ -91,17 +91,9 @@ class GoogleProvider(AIProvider):
             raise Exception(f"Google Imagen generation failed: {str(e)}")
     
     def _build_prompt(self, request: GenerationRequest) -> str:
-        """Build prompt for Google Imagen."""
-        parts = [
-            request.scene_prompt,
-            f"{request.style} style",
-            f"{request.lighting} lighting",
-            f"{request.angle} angle view",
-            "professional product photography",
-            "high quality",
-        ]
-        return ", ".join(parts)
-    
+        """Build prompt using shared img2img prompt builder."""
+        return build_img2img_prompt(request)
+
     def estimate_cost(self, request: GenerationRequest) -> float:
         """Estimate cost - $0.03 per image (free tier coming soon)."""
         return 0.03 * request.num_variations

@@ -8,7 +8,7 @@ import time
 from PIL import Image
 import httpx
 
-from app.providers.base import AIProvider, GenerationRequest, GenerationResult
+from app.providers.base import AIProvider, GenerationRequest, GenerationResult, build_img2img_prompt
 
 
 class NVIDIAProvider(AIProvider):
@@ -135,18 +135,9 @@ class NVIDIAProvider(AIProvider):
             raise Exception(f"NVIDIA generation failed: {str(e)}")
     
     def _build_prompt(self, request: GenerationRequest) -> str:
-        """Build prompt for NVIDIA API."""
-        parts = [
-            request.scene_prompt,
-            f"{request.style} style",
-            f"{request.lighting} lighting",
-            f"{request.angle} angle view",
-            "professional product photography",
-            "high quality",
-            "detailed",
-        ]
-        return ", ".join(parts)
-    
+        """Build prompt using shared img2img prompt builder."""
+        return build_img2img_prompt(request)
+
     def estimate_cost(self, request: GenerationRequest) -> float:
         """Estimate cost for NVIDIA API."""
         # NVIDIA NIM pricing varies, estimate ~$0.003 per image for Flux Schnell
