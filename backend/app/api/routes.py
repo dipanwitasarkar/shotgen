@@ -283,6 +283,12 @@ async def get_available_models():
     """Get available models for each provider."""
     return ModelsResponse(
         models={
+            "pollinations": [
+                {"id": "flux", "name": "FLUX", "description": "⭐ FREE - No key needed"},
+                {"id": "flux-realism", "name": "FLUX Realism", "description": "⭐ FREE - Photorealistic"},
+                {"id": "flux-anime", "name": "FLUX Anime", "description": "⭐ FREE - Illustration"},
+                {"id": "turbo", "name": "Turbo", "description": "⭐ FREE - Fastest"},
+            ],
             "nvidia": [
                 {"id": "flux-schnell", "name": "FLUX.1 Schnell", "description": "Very fast, 4 steps"},
                 {"id": "flux-dev", "name": "FLUX.1 Dev", "description": "High quality, 20-50 steps"},

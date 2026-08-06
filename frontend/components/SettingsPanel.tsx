@@ -31,6 +31,19 @@ interface Model {
 
 const PROVIDERS: Provider[] = [
   {
+    id: 'pollinations',
+    name: 'Pollinations.ai ⭐ 100% FREE',
+    description: 'NO signup, NO API key - Just works!',
+    apiKeyLabel: 'No API Key Needed',
+    keyUrl: '',
+    models: [
+      { id: 'flux', name: 'FLUX', description: '⭐ FREE - No key needed' },
+      { id: 'flux-realism', name: 'FLUX Realism', description: '⭐ FREE - Photorealistic' },
+      { id: 'flux-anime', name: 'FLUX Anime', description: '⭐ FREE - Illustration' },
+      { id: 'turbo', name: 'Turbo', description: '⭐ FREE - Fastest' },
+    ],
+  },
+  {
     id: 'together',
     name: 'Together AI ⭐ FREE',
     description: 'Free 3 months unlimited, fast inference',
@@ -149,12 +162,13 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
   }
 
   const handleSave = async () => {
-    if (!apiKey.trim()) {
+    // Pollinations doesn't need API key
+    if (provider !== 'pollinations' && !apiKey.trim()) {
       setError('API key is required')
       return
     }
 
-    const settings: AppSettings = { provider, model, apiKey }
+    const settings: AppSettings = { provider, model, apiKey: apiKey || 'no-key-needed' }
     
     // Save to localStorage
     localStorage.setItem('shotgen-settings', JSON.stringify(settings))
@@ -316,12 +330,12 @@ export function SettingsPanel({ onSettingsChange }: SettingsPanelProps) {
           {/* Save Button */}
           <button
             onClick={handleSave}
-            disabled={!apiKey.trim()}
+            disabled={provider !== 'pollinations' && !apiKey.trim()}
             className={cn(
               'w-full py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center gap-2',
               saved
                 ? 'bg-green-500 text-white'
-                : apiKey.trim()
+                : (provider === 'pollinations' || apiKey.trim())
                   ? 'bg-brand-500 hover:bg-brand-600 text-white'
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed'
             )}

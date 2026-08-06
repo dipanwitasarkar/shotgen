@@ -20,11 +20,12 @@ class PollinationsProvider(AIProvider):
         "turbo": "turbo",
     }
     
-    def __init__(self, api_key: str):
-        self.api_key = api_key
+    def __init__(self, api_key: str = ""):
+        self.api_key = api_key  # Optional, not required for free tier
         self.base_url = "https://image.pollinations.ai/prompt"
         headers = {}
-        if api_key:
+        # API key is optional for Pollinations
+        if api_key and api_key != "no-key-needed":
             headers["Authorization"] = f"Bearer {api_key}"
         self.client = httpx.AsyncClient(
             headers=headers,
